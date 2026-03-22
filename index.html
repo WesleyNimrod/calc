@@ -231,7 +231,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 <label>Category</label>
 <select id="category" onchange="onScoreChange()">
 <option value="">Select</option><option value="CAT A-B" selected>CAT A-B</option>
-<option value="CAT C">CAT C</option><option value="CAT D-E">CAT D-E</option>
+<option value="CAT C">CAT C</option><option value="CAT D">CAT D</option><option value="CAT E">CAT E</option>
 </select>
 </div>
 <!-- 6. Rate % -->
@@ -493,9 +493,10 @@ var RATE_CHART=[
 var ELIG_MULT={'NH':20,'VLR':25,'LR':22,'MR':20,'HR':18,'VHR':15};
 var ADCB_ADJ={'VLR':2,'LR':0,'MR':-1,'HR':-2,'VHR':-3};
 var MAX_CAP={
-'CAT A-B':{'VLR':2000000,'LR':2000000,'NH':1500000,'MR':1500000,'HR':1000000,'VHR':750000},
-'CAT C':{'VLR':1500000,'LR':1500000,'NH':1250000,'MR':1250000,'HR':750000,'VHR':500000},
-'CAT D-E':{'VLR':1000000,'LR':1000000,'NH':750000,'MR':750000,'HR':500000,'VHR':350000}
+'CAT A-B':{'VLR':1500000,'LR':1500000,'NH':750000,'MR':1500000,'HR':1500000,'VHR':1500000},
+'CAT C':{'VLR':1000000,'LR':1000000,'NH':500000,'MR':1000000,'HR':750000,'VHR':1000000},
+'CAT D':{'VLR':400000,'LR':400000,'NH':150000,'MR':400000,'HR':400000,'VHR':400000},
+'CAT E':{'VLR':150000,'LR':150000,'NH':150000,'MR':150000,'HR':150000,'VHR':150000}
 };
 
 /* ===== STATE ===== */
@@ -677,7 +678,8 @@ var rate=null;
 for(var i=0;i<RATE_CHART.length;i++){var r=RATE_CHART[i];if(sal>=r.min&&sal<=r.max){rate=r[aecb];break;}}
 if(rate===null||rate===undefined)return null;
 if(cat==='CAT C')rate+=0.5;
-else if(cat==='CAT D-E')rate+=2;
+else if(cat==='CAT D')rate+=2;
+else if(cat==='CAT E')rate+=2;
 return rate;
 }
 function onScoreChange(){

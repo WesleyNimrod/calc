@@ -198,7 +198,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 <span style="font-size:12px;font-weight:700">Add-back</span>
 <div id="abTotal" class="hidden" style="font-size:11px;opacity:0.85;margin-top:1px">AED <span id="abTotalVal">0</span></div>
 </div>
-<!-- 3. AECB Score (#9: NH first, MR between LR & HR, #10: ENTER SCORE) -->
+<!-- 3. AECB Score (#9: #10: ENTER SCORE) -->
 <div class="field-card fc-score">
 <label>AECB Score</label>
 <select id="aecbScore" onchange="onAecbChange()">
@@ -599,10 +599,10 @@ if(sp==='0-30')return[0,30];if(sp==='31-60')return[31,60];return[61,90];
 /* ===== #10: AECB ENTER SCORE ===== */
 function translateAecbScore(score){
 if(!score||score<=0)return'NH';
-if(score>=740)return'VLR';
-if(score>=680)return'LR';
-if(score>=620)return'MR';
-if(score>=550)return'HR';
+if(score>=746)return'VLR';
+if(score>=711)return'LR';
+if(score>=651)return'MR';
+if(score>=541)return'HR';
 return'VHR';
 }
 function getEffectiveAecb(){
@@ -765,7 +765,7 @@ function getTotalCCOS(){var total=0;document.querySelectorAll('.card-entry').for
 function addAddbackEntry(){
 addbackCount++;var idx=addbackCount;addbackData[idx]={type:'',values:{}};
 var div=document.createElement('div');div.className='p-3 border border-gray-200 dark:border-gray-600 rounded-xl mb-2';div.setAttribute('data-ab-idx',idx);
-div.innerHTML='<select class="entry-select w-full mb-2" style="font-size:14px" onchange="onAbTypeChange(this,'+idx+')"><option value="">Select Add-back Type</option><option value="hra">HRA</option><option value="airfare">Airfare Allowance</option><option value="overtime">Over-time</option><option value="servicecharge">Service Charge</option><option value="incentives">Incentives</option><option value="telephone">Telephone Allowance</option></select><div class="ab-fields" id="abFields'+idx+'"></div>';
+div.innerHTML='<select class="entry-select w-full mb-2" style="font-size:14px" onchange="onAbTypeChange(this,'+idx+')"><option value="">Select Add-back Type</option><option value="hra">HRA</option><option value="airfare">Airfare Allowance</option><option value="varibles">Variables(OT/SC/Others)</option></select><div class="ab-fields" id="abFields'+idx+'"></div>';
 document.getElementById('addbackList').appendChild(div);document.getElementById('rmAbBtn').disabled=false;
 }
 function removeAddbackEntry(){

@@ -514,6 +514,26 @@ var confirmCb=null;
 var currentTab='loan';
 var optimalLoanMax=100000;
 
+/* ===== LOCALSTORAGE FUNCTIONS ===== */
+function loadProfilesFromStorage() {
+    var stored = localStorage.getItem('adcb_profiles');
+    if (stored) {
+        try {
+            profileStorage = JSON.parse(stored);
+        } catch(e) {
+            console.error('Failed to parse profiles:', e);
+            profileStorage = {};
+        }
+    } else {
+        profileStorage = {};
+    }
+    loadProfileList();
+}
+
+function saveProfilesToStorage() {
+    localStorage.setItem('adcb_profiles', JSON.stringify(profileStorage));
+}
+
 /* ===== UTILITY ===== */
 function fmt(n){if(isNaN(n)||!isFinite(n))return'0';return parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 function fmtInt(n){if(isNaN(n)||!isFinite(n))return'0';return Math.floor(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');}
@@ -1103,6 +1123,7 @@ aecbScore:document.getElementById('aecbScore').value,aecbNumericScore:document.g
 adcbScore:document.getElementById('adcbScore').value,category:document.getElementById('category').value,rate:document.getElementById('rate').value,rateDiscount:document.getElementById('rateDiscount').value,pfDiscount:document.getElementById('pfDiscount').value,closureFee:document.getElementById('closureFee').value,genLoanAmt:document.getElementById('genLoanAmt').value,tenureInput:document.getElementById('tenureInput').value,dPrefEMI:document.getElementById('dPrefEMI').value,dCashOut:document.getElementById('dCashOut').value,netAmt:document.getElementById('netAmtCb').checked,specialNote:document.getElementById('specialNote').value,dbrThreshold:dbrThreshold,startPeriod:getStartPeriod(),instDate:getInstDate(),ddDisbDate:document.getElementById('ddDisbDate').value,addbackData:JSON.parse(JSON.stringify(addbackData)),
 loans:Array.from(document.querySelectorAll('.loan-entry')).map(function(e){return{bank:e.querySelector('.loan-bank').value,type:e.querySelector('.loan-type').value,inst:e.querySelector('.loan-inst').value,os:e.querySelector('.loan-os').value,settled:settledLoans.has(parseInt(e.getAttribute('data-idx')))};}),
 cards:Array.from(document.querySelectorAll('.card-entry')).map(function(e){var idx=parseInt(e.getAttribute('data-idx'));return{bank:e.querySelector('.cc-bank').value,limit:e.querySelector('.cc-limit').value,nl:e.querySelector('.cc-newlimit').value,os:e.querySelector('.cc-os').value,sa:e.querySelector('.cc-settle-amt').value,settled:settledCards.has(idx),origOS:origOSValues.get(idx)||e.querySelector('.cc-os').value};})};
+saveProfilesToStorage();
 loadProfileList();showToast('Profile saved: '+name);
 }
 function loadProfileList(){var sel=document.getElementById('savedProfiles');sel.innerHTML='<option value="">Select a profile</option>';Object.keys(profileStorage).forEach(function(n){var opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});}
@@ -1126,7 +1147,7 @@ updateSliderFromInput();recalcAll();
 },100);
 showToast('Profile loaded: '+p.name);
 }
-function deleteProfile(){var sel=document.getElementById('savedProfiles').value;if(!sel){showToast('Select a profile first');return;}showConfirm('Delete profile "'+sel+'"?',function(yes){if(yes){delete profileStorage[sel];loadProfileList();showToast('Profile deleted');}});}
+function deleteProfile(){var sel=document.getElementById('savedProfiles').value;if(!sel){showToast('Select a profile first');return;}showConfirm('Delete profile "'+sel+'"?',function(yes){if(yes){delete profileStorage[sel];saveProfilesToStorage();loadProfileList();showToast('Profile deleted');}});}
 
 function resetAll(silent){
 document.getElementById('custName').value='';document.getElementById('waNum').value='';document.getElementById('salary').value='';document.getElementById('loanType').value='Fresh';
@@ -1145,6 +1166,7 @@ recalcAll();if(!silent)showToast('All fields reset');
 }
 
 /* ===== INIT ===== */
+loadProfilesFromStorage();
 buildStartPeriod();
 var brInit=getBaseRate();
 if(brInit!==null){document.getElementById('rate').value=brInit.toFixed(2);}
@@ -1156,3 +1178,4 @@ recalcAll();
 </script>
 </body>
 </html>
+

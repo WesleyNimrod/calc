@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>ADCB Loan Calculator</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,7 +34,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 .dbr-thresh.t49{background:rgba(34,197,94,0.4);border:1px solid rgba(34,197,94,0.6)}
 .dbr-thresh.t4999{background:rgba(251,191,36,0.4);border:1px solid rgba(251,191,36,0.6)}
 
-.field-card{background:#fff;border:2px solid #dbeafe;border-radius:14px;padding:10px 14px;transition:all 0.2s;margin:4px}
+.field-card{background:#fff;border:2px solid #dbeafe;border-radius:14px;padding:10px 14px;transition:all 0.2s}
 .field-card:focus-within{border-color:#1e3a8a;box-shadow:0 0 0 3px rgba(30,58,138,0.1)}
 .field-card label{display:block;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
 .field-card input,.field-card select{width:100%;border:none;background:transparent;font-size:16px;font-weight:500;color:#1e293b;padding:2px 0}
@@ -44,7 +44,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 .fc-terms{border-left:4px solid #0d9488}
 .fc-disc{border-left:4px solid #f59e0b}
 
-.addback-btn{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#6366f1,#4f46e5);border:2px solid #818cf8;border-radius:14px;padding:10px 14px;color:#fff;transition:all 0.3s;margin:4px}
+.addback-btn{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#6366f1,#4f46e5);border:2px solid #818cf8;border-radius:14px;padding:10px 14px;color:#fff;transition:all 0.3s}
 .addback-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(99,102,241,0.3)}
 .liab-btn{background:linear-gradient(135deg,#0d9488,#0f766e);border-color:#2dd4bf}
 
@@ -102,7 +102,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 .cc-suggest.good{background:rgba(16,185,129,0.1);border:1px solid #10b981;color:#059669}
 .cc-suggest.warn{background:rgba(239,68,68,0.1);border:1px solid #ef4444;color:#dc2626;font-weight:700}
 
-.tab-btn-row{display:flex;border-bottom:2px solid #e5e7eb;margin-bottom:12px}
+.tab-btn-row{display:flex;border-bottom:2px solid #e5e7eb;margin-bottom:12px;overflow-x:auto;white-space:nowrap}
 .tab-btn-item{padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;color:#6b7280;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Outfit',sans-serif}
 .tab-btn-item.active{color:#1e3a8a;border-bottom-color:#1e3a8a}
 .tab-pane{display:none}
@@ -133,7 +133,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 .sb-mr{background:#fef3c7;color:#d97706}.sb-nh{background:#e5e7eb;color:#6b7280}
 .sb-hr{background:#fed7aa;color:#ea580c}.sb-vhr{background:#fecaca;color:#dc2626}
 
-.comparison-table{width:100%;border-collapse:collapse;margin-top:8px}
+.comparison-table{width:100%;border-collapse:collapse;margin-top:8px;overflow-x:auto;display:block}
 .comparison-table th,.comparison-table td{border:1px solid #e2e8f0;padding:8px 6px;text-align:center;font-size:13px}
 .comparison-table th{background:#f1f5f9;font-weight:700}
 .comparison-table input{width:100px;text-align:center;padding:4px;border:1px solid #cbd5e1;border-radius:6px}
@@ -141,6 +141,30 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 .comparison-table .savings-negative{color:#dc2626;font-weight:700}
 .btn-add-tenor{background:#0d9488;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;margin-top:8px}
 .btn-remove-tenor{background:#ef4444;color:#fff;border:none;border-radius:6px;padding:2px 6px;font-size:10px;cursor:pointer;margin-left:5px}
+
+/* ===== LAYOUT FIXES ===== */
+.row-1 { display: flex; flex-wrap: nowrap; gap: 12px; align-items: stretch; margin-bottom: 12px; }
+.row-1 > * { flex: 1; }
+.row-1 .salary { flex: 2; } /* 50% */
+.row-1 .addback, .row-1 .liabilities { flex: 1; } /* 25% each */
+
+.row-2, .row-3 {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+@media (min-width: 768px) {
+  .row-2, .row-3 { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 767px) {
+  .row-2, .row-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ensure field cards inside grid have full width */
+.row-2 .field-card, .row-3 .field-card { margin: 0; }
+
+/* adjust addback button min width */
+.addback-btn { min-width: 0; }
 </style>
 </head>
 <body class="font-body">
@@ -166,27 +190,27 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 
 <div class="max-w-5xl mx-auto px-3 py-4 space-y-3">
 
-<!-- Row 1: Salary (50%), Add-back (25%), Liabilities (25%) -->
-<div class="flex flex-wrap md:flex-nowrap gap-2 items-stretch">
-  <div class="w-full md:w-1/2"><div class="field-card fc-money"><label>Salary (AED)</label><input type="text" id="salary" placeholder="Enter salary" inputmode="numeric" oninput="onSalaryInput(this)"><div id="grossLine" class="hidden" style="font-size:11px;color:#2563eb;font-weight:600;margin-top:2px">Gross: <span id="grossVal">0</span></div></div></div>
-  <div class="w-full md:w-1/4"><div class="addback-btn" onclick="openModal('addbackModal')"><i class="fas fa-plus-circle" style="font-size:18px;margin-bottom:2px"></i><span style="font-size:12px;font-weight:700">Add-back</span><div id="abTotal" class="hidden" style="font-size:11px;opacity:0.85;margin-top:1px">AED <span id="abTotalVal">0</span></div></div></div>
-  <div class="w-full md:w-1/4"><div class="addback-btn liab-btn" onclick="openModal('liabilitiesModal')"><i class="fas fa-layer-group" style="font-size:18px;margin-bottom:2px"></i><span style="font-size:12px;font-weight:700">Liabilities</span></div></div>
+<!-- Row 1: Salary (50%), Add-back (25%), Liabilities (25%) – always in one row -->
+<div class="row-1">
+  <div class="salary field-card fc-money"><label>Salary (AED)</label><input type="text" id="salary" placeholder="Enter salary" inputmode="numeric" oninput="onSalaryInput(this)"><div id="grossLine" class="hidden" style="font-size:11px;color:#2563eb;font-weight:600;margin-top:2px">Gross: <span id="grossVal">0</span></div></div>
+  <div class="addback addback-btn" onclick="openModal('addbackModal')"><i class="fas fa-plus-circle" style="font-size:18px;margin-bottom:2px"></i><span style="font-size:12px;font-weight:700">Add-back</span><div id="abTotal" class="hidden" style="font-size:11px;opacity:0.85;margin-top:1px">AED <span id="abTotalVal">0</span></div></div>
+  <div class="liabilities addback-btn liab-btn" onclick="openModal('liabilitiesModal')"><i class="fas fa-layer-group" style="font-size:18px;margin-bottom:2px"></i><span style="font-size:12px;font-weight:700">Liabilities</span></div>
 </div>
 
-<!-- Row 2: AECB Score (25%), ADCB Score (25%), Category (25%), Rate (25%) -->
-<div class="flex flex-wrap md:flex-nowrap gap-2">
-  <div class="w-full md:w-1/4"><div class="field-card fc-score"><label>AECB Score</label><select id="aecbScore" onchange="onAecbChange()"><option value="NH" selected>NH</option><option value="VLR">VLR</option><option value="LR">LR</option><option value="MR">MR</option><option value="HR">HR</option><option value="VHR">VHR</option><option value="ENTER">ENTER SCORE</option></select><div id="aecbScoreInput" class="score-input-wrap hidden"><input type="text" id="aecbNumericScore" placeholder="e.g. 680" inputmode="numeric" oninput="onAecbNumericInput(this)"><span id="aecbScoreBadge" class="score-badge sb-nh" style="display:none"></span></div></div></div>
-  <div class="w-full md:w-1/4"><div class="field-card fc-score"><label>ADCB Score</label><select id="adcbScore" onchange="onScoreChange()"><option value="VLR">VLR</option><option value="LR" selected>LR</option><option value="MR">MR</option><option value="HR">HR</option><option value="VHR">VHR</option></select></div></div>
-  <div class="w-full md:w-1/4"><div class="field-card fc-terms"><label>Category</label><select id="category" onchange="onScoreChange()"><option value="">Select</option><option value="CAT A-B" selected>CAT A-B</option><option value="CAT C">CAT C</option><option value="CAT D">CAT D</option><option value="CAT E">CAT E</option></select></div></div>
-  <div class="w-full md:w-1/4"><div class="field-card fc-terms"><label>Rate %</label><input type="text" id="rate" placeholder="Auto / Manual" oninput="onRateInput()"></div></div>
+<!-- Row 2: AECB Score, ADCB Score, Category, Rate – responsive grid (2 on mobile, 4 on desktop) -->
+<div class="row-2">
+  <div class="field-card fc-score"><label>AECB Score</label><select id="aecbScore" onchange="onAecbChange()"><option value="NH" selected>NH</option><option value="VLR">VLR</option><option value="LR">LR</option><option value="MR">MR</option><option value="HR">HR</option><option value="VHR">VHR</option><option value="ENTER">ENTER SCORE</option></select><div id="aecbScoreInput" class="score-input-wrap hidden"><input type="text" id="aecbNumericScore" placeholder="e.g. 680" inputmode="numeric" oninput="onAecbNumericInput(this)"><span id="aecbScoreBadge" class="score-badge sb-nh" style="display:none"></span></div></div>
+  <div class="field-card fc-score"><label>ADCB Score</label><select id="adcbScore" onchange="onScoreChange()"><option value="VLR">VLR</option><option value="LR" selected>LR</option><option value="MR">MR</option><option value="HR">HR</option><option value="VHR">VHR</option></select></div>
+  <div class="field-card fc-terms"><label>Category</label><select id="category" onchange="onScoreChange()"><option value="">Select</option><option value="CAT A-B" selected>CAT A-B</option><option value="CAT C">CAT C</option><option value="CAT D">CAT D</option><option value="CAT E">CAT E</option></select></div>
+  <div class="field-card fc-terms"><label>Rate %</label><input type="text" id="rate" placeholder="Auto / Manual" oninput="onRateInput()"></div>
 </div>
 
-<!-- Row 3: Start Period (25%), Installment Date (25%), Rate Discount (25%), Processing Fees (25%) -->
-<div class="flex flex-wrap md:flex-nowrap gap-2">
-  <div class="w-full md:w-1/4"><div class="field-card fc-terms"><label>Start Period</label><div id="startPeriodBox" class="flex gap-1 flex-wrap mt-1"></div></div></div>
-  <div class="w-full md:w-1/4"><div class="field-card fc-terms"><label>Installment Date</label><div class="inst-group mt-1"><input type="radio" name="instDate" id="inst5" value="5" class="inst-radio" checked onchange="onInstDateChange()"><label for="inst5" class="inst-lbl">5</label><input type="radio" name="instDate" id="inst10" value="10" class="inst-radio" onchange="onInstDateChange()"><label for="inst10" class="inst-lbl">10</label><input type="radio" name="instDate" id="inst18" value="18" class="inst-radio" onchange="onInstDateChange()"><label for="inst18" class="inst-lbl">18</label><input type="radio" name="instDate" id="inst25" value="25" class="inst-radio" onchange="onInstDateChange()"><label for="inst25" class="inst-lbl">25</label></div></div></div>
-  <div class="w-full md:w-1/4"><div class="field-card fc-disc"><label>Rate Discount</label><select id="rateDiscount" onchange="onRateDiscountChange()"><option value="0">None</option><option value="0.25">0.25%</option><option value="0.50">0.50%</option><option value="0.75">0.75%</option><option value="1">1.00%</option><option value="1.25">1.25%</option><option value="1.50">1.50%</option><option value="1.75">1.75%</option><option value="2">2.00%</option><option value="2.25">2.25%</option></select></div></div>
-  <div class="w-full md:w-1/4"><div class="field-card fc-disc"><label>Processing Fees</label><select id="pfDiscount" onchange="recalcAll()"><option value="0">0%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100%</option></select></div></div>
+<!-- Row 3: Start Period, Installment Date, Rate Discount, Processing Fees – responsive grid -->
+<div class="row-3">
+  <div class="field-card fc-terms"><label>Start Period</label><div id="startPeriodBox" class="flex gap-1 flex-wrap mt-1"></div></div>
+  <div class="field-card fc-terms"><label>Installment Date</label><div class="inst-group mt-1"><input type="radio" name="instDate" id="inst5" value="5" class="inst-radio" checked onchange="onInstDateChange()"><label for="inst5" class="inst-lbl">5</label><input type="radio" name="instDate" id="inst10" value="10" class="inst-radio" onchange="onInstDateChange()"><label for="inst10" class="inst-lbl">10</label><input type="radio" name="instDate" id="inst18" value="18" class="inst-radio" onchange="onInstDateChange()"><label for="inst18" class="inst-lbl">18</label><input type="radio" name="instDate" id="inst25" value="25" class="inst-radio" onchange="onInstDateChange()"><label for="inst25" class="inst-lbl">25</label></div></div>
+  <div class="field-card fc-disc"><label>Rate Discount</label><select id="rateDiscount" onchange="onRateDiscountChange()"><option value="0">None</option><option value="0.25">0.25%</option><option value="0.50">0.50%</option><option value="0.75">0.75%</option><option value="1">1.00%</option><option value="1.25">1.25%</option><option value="1.50">1.50%</option><option value="1.75">1.75%</option><option value="2">2.00%</option><option value="2.25">2.25%</option></select></div>
+  <div class="field-card fc-disc"><label>Processing Fees</label><select id="pfDiscount" onchange="recalcAll()"><option value="0">0%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100%</option></select></div>
 </div>
 
 <div id="closureFeeRow" class="hidden">
@@ -317,7 +341,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 </div>
 </div>
 
-<!-- MODALS (unchanged except for ADCB settle logic) -->
+<!-- MODALS (same structure, all JS functions are present) -->
 <div id="profilesModal" class="modal-overlay" onclick="if(event.target===this)closeAllModals()">
 <div class="modal-box">
 <h3><i class="fas fa-user-circle" style="color:#7c3aed"></i> Profiles <button class="modal-close" onclick="closeAllModals()">&times;</button></h3>
@@ -396,7 +420,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 
 <script>
 // ============================
-// FULL JAVASCRIPT (with modifications for layout, ADCB settle, editable comparison rate, editable msgBox)
+// FULL JAVASCRIPT (same as last working version with all features)
 // ============================
 
 // ---------------------- DARK MODE REMOVED (light only) ----------------------
@@ -829,8 +853,6 @@ function toggleSettleCard(btn){
 var entry=btn.closest('.card-entry');var idx=parseInt(entry.getAttribute('data-idx'));var bankSel = entry.querySelector('.cc-bank');
 var isAdcb = bankSel && bankSel.value === 'ADCB';
 if(isAdcb){
-    // For ADCB, clicking Settle does NOT add full outstanding to deductions; only the typed settle amount matters.
-    // We just toggle the visual class, but don't affect settledCards map.
     if(entry.classList.contains('settled')){
         entry.classList.remove('settled');
         btn.textContent='Settle';
@@ -840,10 +862,8 @@ if(isAdcb){
         btn.textContent='Unsettle';
         btn.classList.add('unsettled');
     }
-    // Do NOT add to settledCards
     return;
 }
-// Non-ADCB: original behavior
 var osInput=entry.querySelector('.cc-os');
 if(settledCards.has(idx)){
     var origOS=settledCards.get(idx);
@@ -1016,7 +1036,6 @@ if(settledLoans.has(idx)){var bank=e.querySelector('.loan-bank').value||'Bank';v
 document.querySelectorAll('.card-entry').forEach(function(e){
 var idx=parseInt(e.getAttribute('data-idx'));
 var bank=e.querySelector('.cc-bank').value;
-// For ADCB, we do NOT include the card in settled list because only the typed settle amount matters.
 if(bank === 'ADCB') return;
 if(settledCards.has(idx) && settledCards.get(idx)!==0){
     var os=settledCards.get(idx);
@@ -1287,7 +1306,6 @@ function autoSaveWaNum(){
 }
 
 function closeLiabilitiesModal(){
-    // auto‑save current liabilities to profile if a profile is selected
     var name=document.getElementById('custName').value.trim();
     if(name && profileStorage[name]){
         profileStorage[name].loans = Array.from(document.querySelectorAll('.loan-entry')).map(function(e){return{bank:e.querySelector('.loan-bank').value,type:e.querySelector('.loan-type').value,inst:e.querySelector('.loan-inst').value,os:e.querySelector('.loan-os').value,settled:settledLoans.has(parseInt(e.getAttribute('data-idx')))};});
@@ -1315,7 +1333,7 @@ recalcAll();if(!silent)showToast('All fields reset');
 }
 
 // ---------------------- LOAN COMPARISON (editable rate per row) ----------------------
-var comparisonTenors = [48,36,24,12]; // default tenors
+var comparisonTenors = [48,36,24,12];
 function updateComparisonTable(){
     var baseLoan = pf(document.getElementById('genLoanAmt').value);
     var baseRate = getEffRate();
@@ -1357,7 +1375,6 @@ function updateComparisonTable(){
                 row.cells[4].innerHTML = fmt(newTotalInt);
                 row.cells[5].innerHTML = newSavings>=0 ? '<span class="savings-negative">+'+fmt(newSavings)+'</span>' : '<span class="savings-positive">-'+fmt(-newSavings)+'</span>';
                 row.cells[6].innerHTML = fmt(newCash);
-                // store updated loan amount for later reference (not needed globally)
             };
         })(tenor, rate, baseTotalInterest, baseTenure);
         cellLoan.appendChild(loanInput);
@@ -1389,8 +1406,6 @@ function updateComparisonTable(){
     });
 }
 function updateComparisonRowRate(inputEl, tenor, rowIdx){
-    // This is called from inline oninput, we'll rely on the closure stored in the row's data
-    // but since we have rowIdx, we can trigger a full refresh of that row.
     var newRate = pf(inputEl.value);
     var row = inputEl.closest('tr');
     var loanCell = row.cells[1];
@@ -1459,7 +1474,6 @@ updateDBRMax();
 autoSetLoan();
 recalcAll();
 
-// Make msgBox editable
 document.getElementById('msgBox').readOnly = false;
 </script>
 </body>

@@ -140,13 +140,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 .comparison-table .savings-positive{color:#16a34a;font-weight:700}
 .comparison-table .savings-negative{color:#dc2626;font-weight:700}
 .btn-add-tenor{background:#0d9488;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;margin-top:8px}
-.btn-remove-tenor{background:#ef4444;color:#fff;border:none;border-radius:6px;padding:2px 6px;font-size:10px;cursor:pointer;margin-left:5px}
-
+.btn-remove-tenor{background:#ef4444;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;margin-top:8px;margin-left:8px}
 /* ===== LAYOUT FIXES ===== */
 .row-1 { display: flex; flex-wrap: nowrap; gap: 12px; align-items: stretch; margin-bottom: 12px; }
 .row-1 > * { flex: 1; }
-.row-1 .salary { flex: 2; } /* 50% */
-.row-1 .addback, .row-1 .liabilities { flex: 1; } /* 25% each */
+.row-1 .salary { flex: 2; }
+.row-1 .addback, .row-1 .liabilities { flex: 1; }
 
 .row-2, .row-3 {
   display: grid;
@@ -159,12 +158,27 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 @media (max-width: 767px) {
   .row-2, .row-3 { grid-template-columns: repeat(2, 1fr); }
 }
-
-/* ensure field cards inside grid have full width */
 .row-2 .field-card, .row-3 .field-card { margin: 0; }
-
-/* adjust addback button min width */
 .addback-btn { min-width: 0; }
+
+/* new multiples container */
+.multiples-wrapper { display: inline-flex; align-items: center; margin-left: 8px; }
+.multiples-wrapper input { width: 60px; text-align: center; font-weight: 700; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 4px 6px; font-size: 14px; }
+
+/* compact profile row - ensure buttons stay inline */
+.profile-compact { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-wrap: nowrap; }
+.profile-compact .custName-compact { flex: 0 0 40%; }
+.profile-compact .savedProfiles-compact { flex: 0 0 30%; }
+.profile-compact .retrieve-compact,
+.profile-compact .delete-compact,
+.profile-compact .save-compact { flex: 0 0 auto; width: auto; min-width: 40px; padding: 8px 12px; font-size: 14px; }
+@media (max-width: 768px) {
+  .profile-compact { flex-wrap: nowrap; overflow-x: auto; }
+  .profile-compact .custName-compact { flex: 2; min-width: 120px; }
+  .profile-compact .savedProfiles-compact { flex: 1; min-width: 100px; }
+}
+/* settled label */
+.settled-label { margin-top: 12px; padding: 8px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 600; color: #1e3a8a; text-align: center; }
 </style>
 </head>
 <body class="font-body">
@@ -190,22 +204,22 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 
 <div class="max-w-5xl mx-auto px-3 py-4 space-y-3">
 
-<!-- Row 1: Salary (50%), Add-back (25%), Liabilities (25%) – always in one row -->
+<!-- Row 1: Salary (50%), Add-back (25%), Liabilities (25%) -->
 <div class="row-1">
   <div class="salary field-card fc-money"><label>Salary (AED)</label><input type="text" id="salary" placeholder="Enter salary" inputmode="numeric" oninput="onSalaryInput(this)"><div id="grossLine" class="hidden" style="font-size:11px;color:#2563eb;font-weight:600;margin-top:2px">Gross: <span id="grossVal">0</span></div></div>
   <div class="addback addback-btn" onclick="openModal('addbackModal')"><i class="fas fa-plus-circle" style="font-size:18px;margin-bottom:2px"></i><span style="font-size:12px;font-weight:700">Add-back</span><div id="abTotal" class="hidden" style="font-size:11px;opacity:0.85;margin-top:1px">AED <span id="abTotalVal">0</span></div></div>
   <div class="liabilities addback-btn liab-btn" onclick="openModal('liabilitiesModal')"><i class="fas fa-layer-group" style="font-size:18px;margin-bottom:2px"></i><span style="font-size:12px;font-weight:700">Liabilities</span></div>
 </div>
 
-<!-- Row 2: AECB Score, ADCB Score, Category, Rate – responsive grid (2 on mobile, 4 on desktop) -->
+<!-- Row 2: AECB Score, ADCB Score, Category, Rate -->
 <div class="row-2">
   <div class="field-card fc-score"><label>AECB Score</label><select id="aecbScore" onchange="onAecbChange()"><option value="NH" selected>NH</option><option value="VLR">VLR</option><option value="LR">LR</option><option value="MR">MR</option><option value="HR">HR</option><option value="VHR">VHR</option><option value="ENTER">ENTER SCORE</option></select><div id="aecbScoreInput" class="score-input-wrap hidden"><input type="text" id="aecbNumericScore" placeholder="e.g. 680" inputmode="numeric" oninput="onAecbNumericInput(this)"><span id="aecbScoreBadge" class="score-badge sb-nh" style="display:none"></span></div></div>
-  <div class="field-card fc-score"><label>ADCB Score</label><select id="adcbScore" onchange="onScoreChange()"><option value="VLR">VLR</option><option value="LR" selected>LR</option><option value="MR">MR</option><option value="HR">HR</option><option value="VHR">VHR</option></select></div>
+  <div class="field-card fc-score"><label>ADCB Score</label><select id="adcbScore" onchange="onAdcbScoreChange()"><option value="VLR">VLR</option><option value="LR" selected>LR</option><option value="MR">MR</option><option value="HR">HR</option><option value="VHR">VHR</option><option value="ENTER">ENTER SCORE</option></select><div id="adcbScoreInput" class="score-input-wrap hidden"><input type="text" id="adcbNumericScore" placeholder="e.g. 680" inputmode="numeric" oninput="onAdcbNumericInput(this)"><span id="adcbScoreBadge" class="score-badge sb-nh" style="display:none"></span></div></div>
   <div class="field-card fc-terms"><label>Category</label><select id="category" onchange="onScoreChange()"><option value="">Select</option><option value="CAT A-B" selected>CAT A-B</option><option value="CAT C">CAT C</option><option value="CAT D">CAT D</option><option value="CAT E">CAT E</option></select></div>
   <div class="field-card fc-terms"><label>Rate %</label><input type="text" id="rate" placeholder="Auto / Manual" oninput="onRateInput()"></div>
 </div>
 
-<!-- Row 3: Start Period, Installment Date, Rate Discount, Processing Fees – responsive grid -->
+<!-- Row 3: Start Period, Installment Date, Rate Discount, Processing Fees -->
 <div class="row-3">
   <div class="field-card fc-terms"><label>Start Period</label><div id="startPeriodBox" class="flex gap-1 flex-wrap mt-1"></div></div>
   <div class="field-card fc-terms"><label>Installment Date</label><div class="inst-group mt-1"><input type="radio" name="instDate" id="inst5" value="5" class="inst-radio" checked onchange="onInstDateChange()"><label for="inst5" class="inst-lbl">5</label><input type="radio" name="instDate" id="inst10" value="10" class="inst-radio" onchange="onInstDateChange()"><label for="inst10" class="inst-lbl">10</label><input type="radio" name="instDate" id="inst18" value="18" class="inst-radio" onchange="onInstDateChange()"><label for="inst18" class="inst-lbl">18</label><input type="radio" name="instDate" id="inst25" value="25" class="inst-radio" onchange="onInstDateChange()"><label for="inst25" class="inst-lbl">25</label></div></div>
@@ -225,9 +239,14 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 <div class="field-card gen-loan-input flex-grow" style="min-width:180px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
 <label style="color:#16a34a;margin-bottom:0">Generate Loan Amount <span id="optimalLabel" style="font-size:10px;opacity:0.7"></span></label>
+<div style="display:flex;align-items:center;gap:8px">
 <div id="genEmiDisplay" class="emi-badge">EMI: 0</div>
+<div class="multiples-wrapper">
+<input type="text" id="dMultiples" value="20" maxlength="2" inputmode="numeric" oninput="onMultiplesChange()" style="width:55px;text-align:center;font-weight:700;background:#fff;border:1px solid #d1d5db;border-radius:8px;padding:4px 4px;">
 </div>
-<input type="text" id="genLoanAmt" placeholder="Auto / Manual" inputmode="numeric" oninput="onLoanAmtManual(this)">
+</div>
+</div>
+<input type="text" id="genLoanAmt" placeholder="Auto / Manual" inputmode="numeric" oninput="onLoanAmtManual(this)" onkeyup="formatLoanAmount(this)">
 <div class="slider-wrap">
 <input type="range" id="loanSlider" min="15000" max="100000" step="500" value="100000" oninput="onSliderChange(this)">
 </div>
@@ -280,7 +299,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 <div class="detail-item"><span class="dl">Grace Period</span><span class="dv" id="dGrace">-</span></div>
 <div class="detail-item"><span class="dl">Total Interest</span><span class="dv" id="dTotalInt">0</span></div>
 <div class="detail-item"><span class="dl">Cash Out</span><input type="text" id="dCashOut" placeholder="0" inputmode="decimal" oninput="recalcAll()"></div>
-<div class="detail-item"><span class="dl">Multiples Of Salary</span><input type="text" id="dMultiples" value="20" maxlength="2" inputmode="numeric" oninput="onMultiplesChange()"></div>
 <div class="detail-item"><span class="dl">Loan Multiples</span><span class="dv" id="dLoanMult">-</span></div>
 <div class="detail-item"><span class="dl">Allowed Liability</span><span class="dv" id="dAllowedLiab">0</span></div>
 <div class="detail-item"><span class="dl">Total Liabilities</span><span class="dv" id="dTotalLiab">0</span></div>
@@ -318,30 +336,49 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 <div style="overflow-x:auto">
 <table class="comparison-table" id="comparisonTable">
 <thead>
-<tr><th>Tenure (months)</th><th>Loan Amount (AED)</th><th>Effective Rate (%)</th><th>EMI (AED)</th><th>Total Interest (AED)</th><th>Savings (vs 48m)</th><th>Cash In Hand (AED)</th><th></th></tr>
+<tr><th>Tenure (months)</th><th>Loan Amount (AED)</th><th>Effective Rate (%)</th><th>EMI (AED)</th><th>Total Interest (AED)</th><th>Savings (vs 48m)</th><th>Cash In Hand (AED)</th></tr>
 </thead>
 <tbody id="comparisonTbody"></tbody>
 </table>
 </div>
+<div>
 <button class="btn-add-tenor" onclick="addComparisonTenor()"><i class="fas fa-plus"></i> Add Tenor</button>
+<button class="btn-remove-tenor" onclick="removeLastComparisonTenor()"><i class="fas fa-minus"></i> Remove Tenor</button>
+</div>
 </div>
 </div>
 
 <div class="space-y-3">
 <textarea id="specialNote" placeholder="Special Notes..." class="w-full rounded-xl border-2 border-gray-200 px-4 py-3 bg-white" rows="2" oninput="updateMessage()"></textarea>
+
+<!-- Settled Liabilities Label (instead of checkboxes) -->
+<div id="settledSelectionContainer" class="settled-label hidden"></div>
+
 <div class="flex gap-2 items-center flex-wrap">
 <div class="flex-1 min-w-[130px] relative">
-<input type="tel" id="waNum" placeholder="WhatsApp Number" class="w-full rounded-xl border-2 border-green-300 px-4 py-3 bg-white pr-10" oninput="autoSaveWaNum()">
+<input type="tel" id="waNum" placeholder="WhatsApp Number" class="w-full rounded-xl border-2 border-green-300 px-4 py-3 bg-white pr-10" oninput="formatWaNumber(this)">
 <button onclick="pasteWA()" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" title="Paste" style="background:none;border:none;cursor:pointer"><i class="fas fa-paste"></i></button>
 </div>
 <button onclick="sendWhatsApp()" style="border:none;cursor:pointer" class="bg-green-600 hover:bg-green-700 text-white rounded-xl px-5 py-3 font-semibold transition-all"><i class="fab fa-whatsapp mr-1"></i> Send</button>
 <button onclick="copyMessage()" style="border:none;cursor:pointer" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-3 font-semibold transition-all"><i class="fas fa-copy mr-1"></i> Copy</button>
 </div>
+
+<!-- Compact Profile Row (icons only) -->
+<div class="profile-compact">
+  <input type="text" id="custNameCompact" placeholder="Customer Name" class="entry-input custName-compact" style="width:100%">
+  <select id="savedProfilesCompact" class="entry-select savedProfiles-compact" style="width:100%">
+    <option value="">Select a profile</option>
+  </select>
+  <button onclick="retrieveProfileCompact()" class="settle-btn retrieve-compact" style="background:linear-gradient(135deg,#1e3a8a,#1e40af);" title="Retrieve"><i class="fas fa-download"></i></button>
+  <button onclick="deleteProfileCompact()" class="settle-btn delete-compact" style="background:linear-gradient(135deg,#ef4444,#dc2626);" title="Delete"><i class="fas fa-trash"></i></button>
+  <button onclick="saveProfileCompact()" class="settle-btn save-compact" style="background:linear-gradient(135deg,#16a34a,#15803d);" title="Save"><i class="fas fa-save"></i></button>
+</div>
+
 <textarea id="msgBox" class="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm bg-gray-50" rows="6" placeholder="Message preview will appear here..."></textarea>
 </div>
 </div>
 
-<!-- MODALS (same structure, all JS functions are present) -->
+<!-- MODALS (identical to previous) -->
 <div id="profilesModal" class="modal-overlay" onclick="if(event.target===this)closeAllModals()">
 <div class="modal-box">
 <h3><i class="fas fa-user-circle" style="color:#7c3aed"></i> Profiles <button class="modal-close" onclick="closeAllModals()">&times;</button></h3>
@@ -376,12 +413,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 <div>
 <div class="flex items-center justify-between mb-2">
 <span class="font-bold text-sm text-gray-600 uppercase tracking-wide">Credit Cards</span>
-<div class="flex gap-2">
+</div>
+<div id="cardsContainer"></div>
+<div class="flex gap-2 mt-2">
 <button onclick="addCard()" class="settle-btn" style="font-size:12px"><i class="fas fa-plus mr-1"></i> Add Card</button>
 <button onclick="removeCard()" class="settle-btn" id="rmCardBtn" style="font-size:12px;background:linear-gradient(135deg,#6b7280,#4b5563)" disabled><i class="fas fa-minus mr-1"></i> Remove</button>
 </div>
-</div>
-<div id="cardsContainer"></div>
 </div>
 <div class="grid grid-cols-2 gap-2 text-sm font-semibold bg-gray-50 rounded-xl p-3">
 <div>Total CC Limit: <span id="lTotalCC" class="text-navyL">0</span></div>
@@ -419,93 +456,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#1e3a8a;box-sh
 </div>
 
 <script>
-// ============================
-// FULL JAVASCRIPT (same as last working version with all features)
-// ============================
+// ============================ FULL JAVASCRIPT ============================
+// Includes all original functions plus modifications for tasks 1-4
 
-// ---------------------- DARK MODE REMOVED (light only) ----------------------
+var RATE_CHART=[{min:5000,max:7999,VHR:12,HR:11,MR:10.5,LR:10,VLR:9.5,NH:10.5},{min:8000,max:11999,VHR:11.5,HR:10.5,MR:10,LR:9.5,VLR:9,NH:10},{min:12000,max:19999,VHR:11,HR:10,MR:8.5,LR:8,VLR:7.5,NH:8.5},{min:20000,max:29999,VHR:9,HR:8,MR:7.5,LR:7.25,VLR:7,NH:7.5},{min:30000,max:49999,VHR:9,HR:8,MR:7,LR:6.5,VLR:6.25,NH:7},{min:50000,max:499999,VHR:9,HR:8,MR:6.5,LR:6.25,VLR:5.99,NH:6.5}];
+var MAX_CAP={'CAT A-B':{'VLR':1500000,'LR':1500000,'NH':750000,'MR':1500000,'HR':1500000,'VHR':1500000},'CAT C':{'VLR':1000000,'LR':1000000,'NH':500000,'MR':1000000,'HR':750000,'VHR':1000000},'CAT D':{'VLR':400000,'LR':400000,'NH':150000,'MR':400000,'HR':400000,'VHR':400000},'CAT E':{'VLR':150000,'LR':150000,'NH':150000,'MR':150000,'HR':150000,'VHR':150000}};
+var MULTIPLIER_MATRIX = {Fresh:{"CAT A-B":{"VHR":{"VHR":0,"HR":0,"MR":5,"LR":10,"VLR":10,"NH":0},"HR":{"VHR":0,"HR":0,"MR":5,"LR":10,"VLR":15,"NH":0},"MR":{"VHR":0,"HR":10,"MR":20,"LR":20,"VLR":20,"NH":20},"LR":{"VHR":10,"HR":15,"MR":20,"LR":20,"VLR":20,"NH":20},"VLR":{"VHR":10,"HR":15,"MR":20,"LR":20,"VLR":20,"NH":20}},"CAT C":{"VHR":{"VHR":0,"HR":0,"MR":5,"LR":5,"VLR":5,"NH":0},"HR":{"VHR":0,"HR":0,"MR":5,"LR":10,"VLR":15,"NH":0},"MR":{"VHR":0,"HR":5,"MR":10,"LR":20,"VLR":20,"NH":20},"LR":{"VHR":5,"HR":10,"MR":15,"LR":20,"VLR":20,"NH":20},"VLR":{"VHR":5,"HR":15,"MR":20,"LR":20,"VLR":20,"NH":20}},"CAT D":{"VHR":{"VHR":0,"HR":0,"MR":0,"LR":5,"VLR":5,"NH":0},"HR":{"VHR":0,"HR":0,"MR":5,"LR":5,"VLR":10,"NH":0},"MR":{"VHR":0,"HR":5,"MR":5,"LR":10,"VLR":10,"NH":5},"LR":{"VHR":0,"HR":5,"MR":10,"LR":15,"VLR":15,"NH":5},"VLR":{"VHR":0,"HR":10,"MR":10,"LR":15,"VLR":15,"NH":5}},"CAT E":{"VHR":{"VHR":0,"HR":0,"MR":0,"LR":5,"VLR":5,"NH":0},"HR":{"VHR":0,"HR":0,"MR":5,"LR":5,"VLR":10,"NH":0},"MR":{"VHR":0,"HR":5,"MR":5,"LR":10,"VLR":10,"NH":5},"LR":{"VHR":0,"HR":5,"MR":10,"LR":15,"VLR":15,"NH":5},"VLR":{"VHR":0,"HR":10,"MR":10,"LR":15,"VLR":15,"NH":5}}},"Top-up/Buyout":{"CAT A-B":{"VHR":{"VHR":0,"HR":0,"MR":20,"LR":20,"VLR":20,"NH":0},"HR":{"VHR":0,"HR":0,"MR":20,"LR":20,"VLR":20,"NH":0},"MR":{"VHR":0,"HR":20,"MR":20,"LR":20,"VLR":20,"NH":20},"LR":{"VHR":20,"HR":20,"MR":20,"LR":20,"VLR":20,"NH":20},"VLR":{"VHR":20,"HR":20,"MR":20,"LR":20,"VLR":20,"NH":20}},"CAT C":{"VHR":{"VHR":0,"HR":0,"MR":20,"LR":20,"VLR":20,"NH":0},"HR":{"VHR":0,"HR":0,"MR":20,"LR":20,"VLR":20,"NH":0},"MR":{"VHR":0,"HR":20,"MR":20,"LR":20,"VLR":20,"NH":20},"LR":{"VHR":20,"HR":20,"MR":20,"LR":20,"VLR":20,"NH":20},"VLR":{"VHR":20,"HR":20,"MR":20,"LR":20,"VLR":20,"NH":20}},"CAT D":{"VHR":{"VHR":0,"HR":0,"MR":0,"LR":5,"VLR":5,"NH":0},"HR":{"VHR":0,"HR":0,"MR":5,"LR":5,"VLR":10,"NH":0},"MR":{"VHR":0,"HR":5,"MR":5,"LR":10,"VLR":10,"NH":5},"LR":{"VHR":0,"HR":5,"MR":10,"LR":15,"VLR":15,"NH":5},"VLR":{"VHR":0,"HR":10,"MR":10,"LR":15,"VLR":15,"NH":5}},"CAT E":{"VHR":{"VHR":0,"HR":0,"MR":0,"LR":5,"VLR":5,"NH":0},"HR":{"VHR":0,"HR":0,"MR":5,"LR":5,"VLR":10,"NH":0},"MR":{"VHR":0,"HR":5,"MR":5,"LR":10,"VLR":10,"NH":5},"LR":{"VHR":0,"HR":5,"MR":10,"LR":15,"VLR":15,"NH":5},"VLR":{"VHR":0,"HR":10,"MR":10,"LR":15,"VLR":15,"NH":5}}}};
 
-// ---------------------- RATE CHART ----------------------
-var RATE_CHART=[
-{min:5000,max:7999,VHR:12,HR:11,MR:10.5,LR:10,VLR:9.5,NH:10.5},
-{min:8000,max:11999,VHR:11.5,HR:10.5,MR:10,LR:9.5,VLR:9,NH:10},
-{min:12000,max:19999,VHR:11,HR:10,MR:8.5,LR:8,VLR:7.5,NH:8.5},
-{min:20000,max:29999,VHR:9,HR:8,MR:7.5,LR:7.25,VLR:7,NH:7.5},
-{min:30000,max:49999,VHR:9,HR:8,MR:7,LR:6.5,VLR:6.25,NH:7},
-{min:50000,max:499999,VHR:9,HR:8,MR:6.5,LR:6.25,VLR:5.99,NH:6.5}
-];
-
-var MAX_CAP={
-'CAT A-B':{'VLR':1500000,'LR':1500000,'NH':750000,'MR':1500000,'HR':1500000,'VHR':1500000},
-'CAT C':{'VLR':1000000,'LR':1000000,'NH':500000,'MR':1000000,'HR':750000,'VHR':1000000},
-'CAT D':{'VLR':400000,'LR':400000,'NH':150000,'MR':400000,'HR':400000,'VHR':400000},
-'CAT E':{'VLR':150000,'LR':150000,'NH':150000,'MR':150000,'HR':150000,'VHR':150000}
-};
-
-var MULTIPLIER_MATRIX = {
-  Fresh: {
-    "CAT A-B": {
-      "VHR": { "VHR":0, "HR":0, "MR":5, "LR":10, "VLR":10, "NH":0 },
-      "HR":  { "VHR":0, "HR":0, "MR":5, "LR":10, "VLR":15, "NH":0 },
-      "MR":  { "VHR":0, "HR":10, "MR":20, "LR":20, "VLR":20, "NH":20 },
-      "LR":  { "VHR":10, "HR":15, "MR":20, "LR":20, "VLR":20, "NH":20 },
-      "VLR": { "VHR":10, "HR":15, "MR":20, "LR":20, "VLR":20, "NH":20 }
-    },
-    "CAT C": {
-      "VHR": { "VHR":0, "HR":0, "MR":5, "LR":5, "VLR":5, "NH":0 },
-      "HR":  { "VHR":0, "HR":0, "MR":5, "LR":10, "VLR":15, "NH":0 },
-      "MR":  { "VHR":0, "HR":5, "MR":10, "LR":20, "VLR":20, "NH":20 },
-      "LR":  { "VHR":5, "HR":10, "MR":15, "LR":20, "VLR":20, "NH":20 },
-      "VLR": { "VHR":5, "HR":15, "MR":20, "LR":20, "VLR":20, "NH":20 }
-    },
-    "CAT D": {
-      "VHR": { "VHR":0, "HR":0, "MR":0, "LR":5, "VLR":5, "NH":0 },
-      "HR":  { "VHR":0, "HR":0, "MR":5, "LR":5, "VLR":10, "NH":0 },
-      "MR":  { "VHR":0, "HR":5, "MR":5, "LR":10, "VLR":10, "NH":5 },
-      "LR":  { "VHR":0, "HR":5, "MR":10, "LR":15, "VLR":15, "NH":5 },
-      "VLR": { "VHR":0, "HR":10, "MR":10, "LR":15, "VLR":15, "NH":5 }
-    },
-    "CAT E": {
-      "VHR": { "VHR":0, "HR":0, "MR":0, "LR":5, "VLR":5, "NH":0 },
-      "HR":  { "VHR":0, "HR":0, "MR":5, "LR":5, "VLR":10, "NH":0 },
-      "MR":  { "VHR":0, "HR":5, "MR":5, "LR":10, "VLR":10, "NH":5 },
-      "LR":  { "VHR":0, "HR":5, "MR":10, "LR":15, "VLR":15, "NH":5 },
-      "VLR": { "VHR":0, "HR":10, "MR":10, "LR":15, "VLR":15, "NH":5 }
-    }
-  },
-  "Top-up/Buyout": {
-    "CAT A-B": {
-      "VHR": { "VHR":0, "HR":0, "MR":20, "LR":20, "VLR":20, "NH":0 },
-      "HR":  { "VHR":0, "HR":0, "MR":20, "LR":20, "VLR":20, "NH":0 },
-      "MR":  { "VHR":0, "HR":20, "MR":20, "LR":20, "VLR":20, "NH":20 },
-      "LR":  { "VHR":20, "HR":20, "MR":20, "LR":20, "VLR":20, "NH":20 },
-      "VLR": { "VHR":20, "HR":20, "MR":20, "LR":20, "VLR":20, "NH":20 }
-    },
-    "CAT C": {
-      "VHR": { "VHR":0, "HR":0, "MR":20, "LR":20, "VLR":20, "NH":0 },
-      "HR":  { "VHR":0, "HR":0, "MR":20, "LR":20, "VLR":20, "NH":0 },
-      "MR":  { "VHR":0, "HR":20, "MR":20, "LR":20, "VLR":20, "NH":20 },
-      "LR":  { "VHR":20, "HR":20, "MR":20, "LR":20, "VLR":20, "NH":20 },
-      "VLR": { "VHR":20, "HR":20, "MR":20, "LR":20, "VLR":20, "NH":20 }
-    },
-    "CAT D": {
-      "VHR": { "VHR":0, "HR":0, "MR":0, "LR":5, "VLR":5, "NH":0 },
-      "HR":  { "VHR":0, "HR":0, "MR":5, "LR":5, "VLR":10, "NH":0 },
-      "MR":  { "VHR":0, "HR":5, "MR":5, "LR":10, "VLR":10, "NH":5 },
-      "LR":  { "VHR":0, "HR":5, "MR":10, "LR":15, "VLR":15, "NH":5 },
-      "VLR": { "VHR":0, "HR":10, "MR":10, "LR":15, "VLR":15, "NH":5 }
-    },
-    "CAT E": {
-      "VHR": { "VHR":0, "HR":0, "MR":0, "LR":5, "VLR":5, "NH":0 },
-      "HR":  { "VHR":0, "HR":0, "MR":5, "LR":5, "VLR":10, "NH":0 },
-      "MR":  { "VHR":0, "HR":5, "MR":5, "LR":10, "VLR":10, "NH":5 },
-      "LR":  { "VHR":0, "HR":5, "MR":10, "LR":15, "VLR":15, "NH":5 },
-      "VLR": { "VHR":0, "HR":10, "MR":10, "LR":15, "VLR":15, "NH":5 }
-    }
-  }
-};
-
-// ---------------------- STATE ----------------------
 var dbrThreshold=49;
 var profileStorage={};
 var addbackData={};
@@ -520,7 +477,7 @@ var confirmCb=null;
 var currentTab='loan';
 var manualOverride = false;
 
-// ---------------------- UTILITY ----------------------
+// Task 2: no more selectedSettledItems set; always include all settled items
 function fmt(n){if(isNaN(n)||!isFinite(n))return'0';return parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 function fmtInt(n){if(isNaN(n)||!isFinite(n))return'0';return Math.floor(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 function pf(v){return parseFloat((v||'').toString().replace(/,/g,''))||0;}
@@ -531,940 +488,124 @@ function closeAllModals(){document.querySelectorAll('.modal-overlay').forEach(fu
 function showConfirm(msg,cb){document.getElementById('confirmMsg').textContent=msg;confirmCb=cb;openModal('confirmModal');}
 function closeConfirm(yes){document.getElementById('confirmModal').classList.remove('open');if(confirmCb){confirmCb(yes);confirmCb=null;}}
 
-// ---------------------- TABS ----------------------
-function switchTab(tab,btn){
-currentTab=tab;
-document.querySelectorAll('.tab-btn-item').forEach(function(b){b.classList.remove('active');});
-btn.classList.add('active');
-document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
-document.getElementById('tab-'+tab).classList.add('active');
-updateMessage();
-if(tab==='comparison') updateComparisonTable();
-}
-function toggleExpand(){
-var exp=document.getElementById('loanExpanded');var btn=document.getElementById('expandBtn');
-if(exp.classList.contains('hidden')){exp.classList.remove('hidden');btn.classList.add('open');}
-else{exp.classList.add('hidden');btn.classList.remove('open');}
-}
+function switchTab(tab,btn){currentTab=tab;document.querySelectorAll('.tab-btn-item').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});document.getElementById('tab-'+tab).classList.add('active');updateMessage();if(tab==='comparison') updateComparisonTable(); // Show/hide settled label container
+var container=document.getElementById('settledSelectionContainer');if(container){if(tab==='loan'){updateSettledLabel();container.classList.remove('hidden');}else container.classList.add('hidden');}}
+function toggleExpand(){var exp=document.getElementById('loanExpanded');var btn=document.getElementById('expandBtn');if(exp.classList.contains('hidden')){exp.classList.remove('hidden');btn.classList.add('open');}else{exp.classList.add('hidden');btn.classList.remove('open');}}
 
-// ---------------------- BANKS ----------------------
 var BANKS=['ADCB','X-Sell','ENBD','EIB','FAB','ADIB','CBD','HSBC','CITI','SCB','MASHREQ','DIB','RAK','OTHER'];
 function bankOpts(){return'<option value="">Bank</option>'+BANKS.map(function(b){return'<option value="'+b+'">'+b+'</option>';}).join('');}
 
-// ---------------------- DBR TOGGLE ----------------------
-function toggleDBR(){
-var lbl=document.getElementById('dbrThreshLabel');
-if(dbrThreshold===49){
-dbrThreshold=49.99;lbl.textContent='49.99%';lbl.className='dbr-thresh t4999';
-}else{
-dbrThreshold=49;lbl.textContent='49%';lbl.className='dbr-thresh t49';
-}
-manualOverride = false;
-updateDBRMax();
-autoSetLoan();
-recalcAll();
-}
-
-// ---------------------- LOAN TYPE ----------------------
-function onLoanTypeChange(){
-var lt=document.getElementById('loanType').value;
-document.getElementById('closureFeeRow').classList.toggle('hidden',lt!=='Top-up');
-if(lt!=='Top-up')document.getElementById('closureFee').value='';
-buildStartPeriod();
-updateAutoMultiples();
-manualOverride = false;
-updateDBRMax();
-autoSetLoan();
-recalcAll();
-}
-
-// ---------------------- START PERIOD ----------------------
-function buildStartPeriod(){
-var lt=document.getElementById('loanType').value;var box=document.getElementById('startPeriodBox');var html='';
-if(lt==='Fresh'||lt==='Top-up'){
-html+='<input type="radio" name="startP" id="sp030" value="0-30" class="radio-pill" onchange="onStartPeriodChange()"><label for="sp030" class="radio-lbl">0-30</label>';
-html+='<input type="radio" name="startP" id="sp3160" value="31-60" class="radio-pill" checked onchange="onStartPeriodChange()"><label for="sp3160" class="radio-lbl">31-60</label>';
-}else{
-html+='<input type="radio" name="startP" id="sp3160b" value="31-60" class="radio-pill" onchange="onStartPeriodChange()"><label for="sp3160b" class="radio-lbl">31-60</label>';
-html+='<input type="radio" name="startP" id="sp6190" value="61-90" class="radio-pill" checked onchange="onStartPeriodChange()"><label for="sp6190" class="radio-lbl">61-90</label>';
-}
-box.innerHTML=html;
-}
+function toggleDBR(){var lbl=document.getElementById('dbrThreshLabel');if(dbrThreshold===49){dbrThreshold=49.99;lbl.textContent='49.99%';lbl.className='dbr-thresh t4999';}else{dbrThreshold=49;lbl.textContent='49%';lbl.className='dbr-thresh t49';}manualOverride = false;updateDBRMax();autoSetLoan();recalcAll();}
+function onLoanTypeChange(){var lt=document.getElementById('loanType').value;document.getElementById('closureFeeRow').classList.toggle('hidden',lt!=='Top-up');if(lt!=='Top-up')document.getElementById('closureFee').value='';buildStartPeriod();updateAutoMultiples();manualOverride = false;updateDBRMax();autoSetLoan();recalcAll();}
+function buildStartPeriod(){var lt=document.getElementById('loanType').value;var box=document.getElementById('startPeriodBox');var html='';if(lt==='Fresh'||lt==='Top-up'){html+='<input type="radio" name="startP" id="sp030" value="0-30" class="radio-pill" onchange="onStartPeriodChange()"><label for="sp030" class="radio-lbl">0-30</label>';html+='<input type="radio" name="startP" id="sp3160" value="31-60" class="radio-pill" checked onchange="onStartPeriodChange()"><label for="sp3160" class="radio-lbl">31-60</label>';}else{html+='<input type="radio" name="startP" id="sp3160b" value="31-60" class="radio-pill" onchange="onStartPeriodChange()"><label for="sp3160b" class="radio-lbl">31-60</label>';html+='<input type="radio" name="startP" id="sp6190" value="61-90" class="radio-pill" checked onchange="onStartPeriodChange()"><label for="sp6190" class="radio-lbl">61-90</label>';}box.innerHTML=html;}
 function getStartPeriod(){var r=document.querySelector('input[name="startP"]:checked');return r?r.value:'31-60';}
-function onStartPeriodChange(){manualOverride=false; updateDBRMax(); autoSetLoan(); recalcAll();}
+function onStartPeriodChange(){manualOverride = true; // Task 2: keep manual if set, but recalc max and cap
+updateDBRMax(); checkAndCapLoan(); recalcAll();}
 function getInstDate(){var r=document.querySelector('input[name="instDate"]:checked');return r?parseInt(r.value):5;}
-function onInstDateChange(){manualOverride=false; updateDBRMax(); autoSetLoan(); recalcAll();}
-
-function getInternalLoanType(){
-var lt=document.getElementById('loanType').value;var sp=getStartPeriod();
-if(lt==='Fresh')return sp==='0-30'?'fresh-0-30':'fresh-30-60';
-if(lt==='Top-up')return sp==='0-30'?'topup-0-30':'topup-30-60';
-return sp==='31-60'?'takeover-30-60':'takeover-60-90';
-}
-function getGraceMonths(){
-var ilt=getInternalLoanType();
-if(ilt==='fresh-0-30'||ilt==='topup-0-30')return 0;
-if(ilt==='takeover-60-90')return 2;
-return 1;
-}
-function getDayRange(){
-var sp=getStartPeriod();
-if(sp==='0-30')return[0,30];if(sp==='31-60')return[31,60];return[61,90];
-}
-
-// ---------------------- AECB SCORE ----------------------
-function translateAecbScore(score){
-if(!score||score<=0)return'NH';
-if(score>=746)return'VLR';
-if(score>=711)return'LR';
-if(score>=651)return'MR';
-if(score>=541)return'HR';
-return'VHR';
-}
-function getEffectiveAecb(){
-var sel=document.getElementById('aecbScore').value;
-if(sel==='ENTER'){return translateAecbScore(pi(document.getElementById('aecbNumericScore').value));}
-return sel;
-}
-function onAecbChange(){
-var sel=document.getElementById('aecbScore').value;
-var wrap=document.getElementById('aecbScoreInput');
-if(sel==='ENTER'){wrap.classList.remove('hidden');document.getElementById('aecbNumericScore').focus();}
-else{wrap.classList.add('hidden');document.getElementById('aecbNumericScore').value='';document.getElementById('aecbScoreBadge').style.display='none';}
-onScoreChange();
-}
-function onAecbNumericInput(el){
-el.value=el.value.replace(/[^0-9]/g,'');
-var score=pi(el.value);var badge=document.getElementById('aecbScoreBadge');
-if(score>0){
-var cat=translateAecbScore(score);
-badge.textContent=cat+' ('+score+')';badge.style.display='inline-block';
-badge.className='score-badge sb-'+cat.toLowerCase();
-}else{badge.style.display='none';}
-onScoreChange();
-}
-
-// ---------------------- MULTIPLIER ----------------------
-function getMultiplierFromChart(){
-    var loanType = document.getElementById('loanType').value;
-    var category = document.getElementById('category').value;
-    var adcbScore = document.getElementById('adcbScore').value;
-    var aecbScore = getEffectiveAecb();
-    if(!loanType || !category || !adcbScore || !aecbScore) return 0;
-    var group = (loanType === 'Fresh') ? 'Fresh' : 'Top-up/Buyout';
-    var catData = MULTIPLIER_MATRIX[group]?.[category];
-    if(!catData) return 0;
-    var adcbRow = catData[adcbScore];
-    if(!adcbRow) return 0;
-    var mult = adcbRow[aecbScore];
-    return (mult !== undefined && mult !== null) ? mult : 0;
-}
-
-function getAutoMultiples(){
-    return getMultiplierFromChart();
-}
-
-function updateAutoMultiples(){
-    var mult = getMultiplierFromChart();
-    document.getElementById('dMultiples').value = mult;
-}
-
-function getMaxEligibilityByMultiplier(){
-    var salary = getSalary();
-    var mult = pf(document.getElementById('dMultiples').value);
-    var rawLoan = salary * mult;
-    var cap = getMaxLoanCap();
-    return Math.min(rawLoan, cap);
-}
-
-function getMaxLoanCap(){
-var cat=document.getElementById('category').value;var aecb=getEffectiveAecb();
-if(!cat||!MAX_CAP[cat])return 999999999;
-return MAX_CAP[cat][aecb]||999999999;
-}
-
-// ---------------------- DBR MAX LOAN ----------------------
-function getDBRMaxLoan(){
-var gross=getGross();
-var rate=getEffRate();
-var tenure=pi(document.getElementById('tenureInput').value);
-if(gross<=0||rate<=0||tenure<=0)return 0;
-var targetPct=dbrThreshold;
-var allowedLiab=gross*(targetPct/100);
-var totalLoanInst=getTotalLoanInst();
-var ccLimit=getTotalCCLimit();
-var dbrCC=ccLimit*0.05;
-var currentLiab=totalLoanInst+dbrCC;
-var availForEMI=allowedLiab-currentLiab;
-if(availForEMI<=0)return 0;
-var low=0,high=gross*100,optimal=0;
-for(var i=0;i<50&&high-low>1;i++){var mid=(low+high)/2;var emi=calcEMIWithGrace(mid,rate,tenure);if(emi<=availForEMI){low=mid;optimal=mid;}else{high=mid;}}
-var maxEligByMult = getMaxEligibilityByMultiplier();
-return Math.min(Math.floor(optimal), maxEligByMult);
-}
-
-function updateDBRMax(){
-    var maxLoan = getDBRMaxLoan();
-    var slider = document.getElementById('loanSlider');
-    var maxVal = Math.max(maxLoan, 0);
-    slider.max = maxVal;
-    document.getElementById('optimalLabel').textContent = '(Max: AED '+fmtInt(maxLoan)+')';
-    if(maxVal === 0) slider.value = 0;
-}
-
-function autoSetLoan(){
-    var maxLoan = getDBRMaxLoan();
-    var slider = document.getElementById('loanSlider');
-    document.getElementById('genLoanAmt').value = maxLoan;
-    slider.value = maxLoan;
-    manualOverride = false;
-    recalcAll();
-}
-
-function checkAndCapLoan(){
-    var currentLoan = pf(document.getElementById('genLoanAmt').value);
-    var maxLoan = getDBRMaxLoan();
-    if(currentLoan > maxLoan){
-        document.getElementById('genLoanAmt').value = maxLoan;
-        document.getElementById('loanSlider').value = maxLoan;
-        manualOverride = false;
-        showToast('Loan amount capped to DBR limit: AED '+fmtInt(maxLoan));
-    }
-    recalcAll();
-}
-
-// ---------------------- SALARY / GROSS ----------------------
-function onSalaryInput(el){
-el.value=el.value.replace(/[^0-9]/g,'');
-var br=getBaseRate();
-if(br!==null){document.getElementById('rate').value=br.toFixed(2);document.getElementById('rate').placeholder=br.toFixed(2)+'% (auto)';}
-updateAutoMultiples();
-manualOverride = false;
-updateDBRMax();
-autoSetLoan();
-}
+function onInstDateChange(){manualOverride = true; updateDBRMax(); checkAndCapLoan(); recalcAll();}
+function getInternalLoanType(){var lt=document.getElementById('loanType').value;var sp=getStartPeriod();if(lt==='Fresh')return sp==='0-30'?'fresh-0-30':'fresh-30-60';if(lt==='Top-up')return sp==='0-30'?'topup-0-30':'topup-30-60';return sp==='31-60'?'takeover-30-60':'takeover-60-90';}
+function getGraceMonths(){var ilt=getInternalLoanType();if(ilt==='fresh-0-30'||ilt==='topup-0-30')return 0;if(ilt==='takeover-60-90')return 2;return 1;}
+function getDayRange(){var sp=getStartPeriod();if(sp==='0-30')return[0,30];if(sp==='31-60')return[31,60];return[61,90];}
+function translateAecbScore(score){if(!score||score<=0)return'NH';if(score>=746)return'VLR';if(score>=711)return'LR';if(score>=651)return'MR';if(score>=541)return'HR';return'VHR';}
+function getEffectiveAecb(){var sel=document.getElementById('aecbScore').value;if(sel==='ENTER'){return translateAecbScore(pi(document.getElementById('aecbNumericScore').value));}return sel;}
+function onAecbChange(){var sel=document.getElementById('aecbScore').value;var wrap=document.getElementById('aecbScoreInput');if(sel==='ENTER'){wrap.classList.remove('hidden');document.getElementById('aecbNumericScore').focus();}else{wrap.classList.add('hidden');document.getElementById('aecbNumericScore').value='';document.getElementById('aecbScoreBadge').style.display='none';}onScoreChange();}
+function onAecbNumericInput(el){el.value=el.value.replace(/[^0-9]/g,'');var score=pi(el.value);var badge=document.getElementById('aecbScoreBadge');if(score>0){var cat=translateAecbScore(score);badge.textContent=cat+' ('+score+')';badge.style.display='inline-block';badge.className='score-badge sb-'+cat.toLowerCase();}else{badge.style.display='none';}onScoreChange();}
+function getEffectiveAdcb(){var sel=document.getElementById('adcbScore').value;if(sel==='ENTER'){return translateAecbScore(pi(document.getElementById('adcbNumericScore').value));}return sel;}
+function onAdcbScoreChange(){var sel=document.getElementById('adcbScore').value;var wrap=document.getElementById('adcbScoreInput');if(sel==='ENTER'){wrap.classList.remove('hidden');document.getElementById('adcbNumericScore').focus();}else{wrap.classList.add('hidden');document.getElementById('adcbNumericScore').value='';document.getElementById('adcbScoreBadge').style.display='none';}onScoreChange();}
+function onAdcbNumericInput(el){el.value=el.value.replace(/[^0-9]/g,'');var score=pi(el.value);var badge=document.getElementById('adcbScoreBadge');if(score>0){var cat=translateAecbScore(score);badge.textContent=cat+' ('+score+')';badge.style.display='inline-block';badge.className='score-badge sb-'+cat.toLowerCase();}else{badge.style.display='none';}onScoreChange();}
+function getMultiplierFromChart(){var loanType = document.getElementById('loanType').value;var category = document.getElementById('category').value;var adcbScore = getEffectiveAdcb();var aecbScore = getEffectiveAecb();if(!loanType || !category || !adcbScore || !aecbScore) return 0;var group = (loanType === 'Fresh') ? 'Fresh' : 'Top-up/Buyout';var catData = MULTIPLIER_MATRIX[group]?.[category];if(!catData) return 0;var adcbRow = catData[adcbScore];if(!adcbRow) return 0;var mult = adcbRow[aecbScore];return (mult !== undefined && mult !== null) ? mult : 0;}
+function getAutoMultiples(){return getMultiplierFromChart();}
+function updateAutoMultiples(){var mult = getMultiplierFromChart();document.getElementById('dMultiples').value = mult;}
+function getMaxEligibilityByMultiplier(){var salary = getSalary();var mult = pf(document.getElementById('dMultiples').value);var rawLoan = salary * mult;var cap = getMaxLoanCap();return Math.min(rawLoan, cap);}
+function getMaxLoanCap(){var cat=document.getElementById('category').value;var aecb=getEffectiveAecb();if(!cat||!MAX_CAP[cat])return 999999999;return MAX_CAP[cat][aecb]||999999999;}
+function getDBRMaxLoan(){var gross=getGross();var rate=getEffRate();var tenure=pi(document.getElementById('tenureInput').value);if(gross<=0||rate<=0||tenure<=0)return 0;var targetPct=dbrThreshold;var allowedLiab=gross*(targetPct/100);var totalLoanInst=getTotalLoanInst();var ccLimit=getTotalCCLimit();var dbrCC=ccLimit*0.05;var currentLiab=totalLoanInst+dbrCC;var availForEMI=allowedLiab-currentLiab;if(availForEMI<=0)return 0;var low=0,high=gross*100,optimal=0;for(var i=0;i<50&&high-low>1;i++){var mid=(low+high)/2;var emi=calcEMIWithGrace(mid,rate,tenure);if(emi<=availForEMI){low=mid;optimal=mid;}else{high=mid;}}var maxEligByMult = getMaxEligibilityByMultiplier();return Math.min(Math.floor(optimal), maxEligByMult);}
+function getDBRMaxLoanForTenure(tenure){var gross=getGross();var rate=getEffRate();if(gross<=0||rate<=0||tenure<=0)return 0;var targetPct=dbrThreshold;var allowedLiab=gross*(targetPct/100);var totalLoanInst=getTotalLoanInst();var ccLimit=getTotalCCLimit();var dbrCC=ccLimit*0.05;var currentLiab=totalLoanInst+dbrCC;var availForEMI=allowedLiab-currentLiab;if(availForEMI<=0)return 0;var low=0,high=gross*100,optimal=0;for(var i=0;i<50&&high-low>1;i++){var mid=(low+high)/2;var emi=calcEMIWithGrace(mid,rate,tenure);if(emi<=availForEMI){low=mid;optimal=mid;}else{high=mid;}}var maxEligByMult = getMaxEligibilityByMultiplier();return Math.min(Math.floor(optimal), maxEligByMult);}
+function updateDBRMax(){var maxLoan = getDBRMaxLoan();var slider = document.getElementById('loanSlider');var maxVal = Math.max(maxLoan, 0);slider.max = maxVal;document.getElementById('optimalLabel').textContent = '(Max: AED '+fmtInt(maxLoan)+')';if(maxVal === 0) slider.value = 0;}
+function autoSetLoan(){var maxLoan = getDBRMaxLoan();var slider = document.getElementById('loanSlider');document.getElementById('genLoanAmt').value = fmtInt(maxLoan); // formatted
+slider.value = maxLoan;manualOverride = false;recalcAll();}
+function checkAndCapLoan(){var currentLoan = pf(document.getElementById('genLoanAmt').value);var maxLoan = getDBRMaxLoan();if(currentLoan > maxLoan){document.getElementById('genLoanAmt').value = fmtInt(maxLoan);document.getElementById('loanSlider').value = maxLoan;manualOverride = false;showToast('Loan amount capped to DBR limit: AED '+fmtInt(maxLoan));}recalcAll();}
+function onSalaryInput(el){el.value=el.value.replace(/[^0-9]/g,'');var br=getBaseRate();if(br!==null){document.getElementById('rate').value=br.toFixed(2);document.getElementById('rate').placeholder=br.toFixed(2)+'% (auto)';}updateAutoMultiples();manualOverride = false;updateDBRMax();autoSetLoan();}
 function getSalary(){return pf(document.getElementById('salary').value);}
-function calcAddbackTotal(){
-var total=0;Object.keys(addbackData).forEach(function(k){
-var ab=addbackData[k];if(!ab||!ab.type)return;
-var v=ab.values||{};
-if(ab.type==='hra'||ab.type==='airfare'){
-var amt=pf(v.amount);if(amt>0)total+=v.period==='yearly'?amt/12:amt;
-}else{var sum=0;for(var i=1;i<=6;i++)sum+=pf(v['m'+i]);total+=sum/6;}
-});return total;
-}
+function calcAddbackTotal(){var total=0;Object.keys(addbackData).forEach(function(k){var ab=addbackData[k];if(!ab||!ab.type)return;var v=ab.values||{};if(ab.type==='hra'||ab.type==='airfare'){var amt=pf(v.amount);if(amt>0)total+=v.period==='yearly'?amt/12:amt;}else{var sum=0;for(var i=1;i<=6;i++)sum+=pf(v['m'+i]);total+=sum/6;}});return total;}
 function getGross(){return getSalary()+calcAddbackTotal();}
-
-// ---------------------- RATE CALCULATION ----------------------
-function getBaseRate(){
-var sal=getSalary();var aecb=getEffectiveAecb();var cat=document.getElementById('category').value;
-if(sal<=0||!aecb||!cat)return null;
-var rate=null;
-for(var i=0;i<RATE_CHART.length;i++){var r=RATE_CHART[i];if(sal>=r.min&&sal<=r.max){rate=r[aecb];break;}}
-if(rate===null||rate===undefined)return null;
-if(cat==='CAT C')rate+=0.5;
-else if(cat==='CAT D')rate+=2;
-else if(cat==='CAT E')rate+=2;
-return rate;
-}
-function onScoreChange(){
-var br=getBaseRate();
-if(br!==null){document.getElementById('rate').value=br.toFixed(2);document.getElementById('rate').placeholder=br.toFixed(2)+'% (auto)';}
-updateAutoMultiples();
-manualOverride = false;
-updateDBRMax();
-autoSetLoan();
-}
-function getCatTenureBonus(){
-var cat=document.getElementById('category').value;var tenure=pi(document.getElementById('tenureInput').value);
-if(cat==='CAT A-B'){if(tenure===12)return 0.5;if(tenure===24)return 0.25;}
-return 0;
-}
-function getEffRate(){
-var r=pf(document.getElementById('rate').value);var d=pf(document.getElementById('rateDiscount').value);
-var bonus=getCatTenureBonus();return Math.max(0,r-d-bonus);
-}
-function onRateInput(){
-var el=document.getElementById('rate');var v=el.value;
-if(!/^[0-9]{0,2}(\.[0-9]{0,2})?$/.test(v))el.value=v.slice(0,-1);
-manualOverride = false;
-updateDBRMax();
-autoSetLoan();
-}
-function onRateDiscountChange(){
-manualOverride = false;
-updateDBRMax();
-autoSetLoan();
-}
-
-// ---------------------- EMI ----------------------
-function calcStdEMI(P,rate,n){
-if(P<=0||rate<=0||n<=0)return 0;
-var mr=rate/12/100;return P*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1);
-}
-function calcEMIWithGrace(P,rate,n){
-if(P<=0||rate<=0||n<=0)return 0;
-var mr=rate/12/100;var gm=getGraceMonths();var adjP=P;
-if(gm===1)adjP=P+P*mr;else if(gm===2)adjP=P+P*mr*2;
-return calcStdEMI(adjP,rate,n);
-}
-
-// ---------------------- PROCESSING FEES ----------------------
+function getBaseRate(){var sal=getSalary();var aecb=getEffectiveAecb();var cat=document.getElementById('category').value;if(sal<=0||!aecb||!cat)return null;var rate=null;for(var i=0;i<RATE_CHART.length;i++){var r=RATE_CHART[i];if(sal>=r.min&&sal<=r.max){rate=r[aecb];break;}}if(rate===null||rate===undefined)return null;if(cat==='CAT C')rate+=0.5;else if(cat==='CAT D')rate+=2;else if(cat==='CAT E')rate+=2;return rate;}
+function onScoreChange(){var br=getBaseRate();if(br!==null){document.getElementById('rate').value=br.toFixed(2);document.getElementById('rate').placeholder=br.toFixed(2)+'% (auto)';}updateAutoMultiples();manualOverride = false;updateDBRMax();autoSetLoan();}
+function getCatTenureBonus(){var cat=document.getElementById('category').value;var tenure=pi(document.getElementById('tenureInput').value);if(cat==='CAT A-B'){if(tenure===12)return 0.5;if(tenure===24)return 0.25;}return 0;}
+function getEffRate(){var r=pf(document.getElementById('rate').value);var d=pf(document.getElementById('rateDiscount').value);var bonus=getCatTenureBonus();return Math.max(0,r-d-bonus);}
+function onRateInput(){var el=document.getElementById('rate');var v=el.value;if(!/^[0-9]{0,2}(\.[0-9]{0,2})?$/.test(v))el.value=v.slice(0,-1);manualOverride = false;updateDBRMax();autoSetLoan();}
+function onRateDiscountChange(){manualOverride = true; updateDBRMax(); checkAndCapLoan(); recalcAll();}
+function calcStdEMI(P,rate,n){if(P<=0||rate<=0||n<=0)return 0;var mr=rate/12/100;return P*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1);}
+function calcEMIWithGrace(P,rate,n){if(P<=0||rate<=0||n<=0)return 0;var mr=rate/12/100;var gm=getGraceMonths();var adjP=P;if(gm===1)adjP=P+P*mr;else if(gm===2)adjP=P+P*mr*2;return calcStdEMI(adjP,rate,n);}
 function calcPF(la){if(la<=0)return 0;var p=la*0.0105;if(p>2625)return 2625;if(p<525)return 525;return p;}
 function getDiscountedPF(la){var base=calcPF(la);var disc=pi(document.getElementById('pfDiscount').value);return base*(1-disc/100);}
-
-// ---------------------- LIABILITIES (loans & cards) ----------------------
-function addLoan(){
-loanCount++;var div=document.createElement('div');div.className='loan-entry';div.setAttribute('data-idx',loanCount);
-div.innerHTML='<div class="flex gap-2 items-center flex-wrap"><select class="entry-select loan-bank" style="flex:1;min-width:80px" onchange="recalcAll()">'+bankOpts()+'</select><select class="entry-select loan-type" style="flex:1;min-width:100px"><option>Personal Loan</option><option>Auto Loan</option><option>Mortgage Loan</option></select><input type="number" placeholder="Installment" class="entry-input loan-inst" style="flex:1;min-width:80px" oninput="recalcAll()"><input type="number" placeholder="Outstanding" class="entry-input loan-os" style="flex:1;min-width:80px" oninput="recalcAll()"><button class="settle-btn" onclick="toggleSettleLoan(this)">Settle</button></div>';
-document.getElementById('loansContainer').appendChild(div);
-document.getElementById('rmLoanBtn').disabled=false;
-manualOverride = false;
-updateDBRMax();
-autoSetLoan();
-}
-function removeLoan(){
-var c=document.getElementById('loansContainer');
-if(c.children.length>0){var last=c.children[c.children.length-1];var idx=parseInt(last.getAttribute('data-idx'));settledLoans.delete(idx);c.removeChild(last);loanCount=c.children.length>0?loanCount:0;document.getElementById('rmLoanBtn').disabled=c.children.length===0;manualOverride=false;updateDBRMax();autoSetLoan();}
-}
-function toggleSettleLoan(btn){
-var entry=btn.closest('.loan-entry');var idx=parseInt(entry.getAttribute('data-idx'));
-if(settledLoans.has(idx)){settledLoans.delete(idx);entry.classList.remove('settled');btn.textContent='Settle';btn.classList.remove('unsettled');}
-else{settledLoans.add(idx);entry.classList.add('settled');btn.textContent='Unsettle';btn.classList.add('unsettled');}
-manualOverride=false;
-updateDBRMax();
-autoSetLoan();
-}
+function addLoan(){loanCount++;var div=document.createElement('div');div.className='loan-entry';div.setAttribute('data-idx',loanCount);div.innerHTML='<div class="flex gap-2 items-center flex-wrap"><select class="entry-select loan-bank" style="flex:1;min-width:80px" onchange="handleBankOther(this,\'loan\')">'+bankOpts()+'</select><select class="entry-select loan-type" style="flex:1;min-width:100px"><option>Personal Loan</option><option>Auto Loan</option><option>Mortgage Loan</option></select><input type="number" placeholder="Installment" class="entry-input loan-inst" style="flex:1;min-width:80px" oninput="recalcAll()"><input type="number" placeholder="Outstanding" class="entry-input loan-os" style="flex:1;min-width:80px" oninput="recalcAll()"><button class="settle-btn" onclick="toggleSettleLoan(this)">Settle</button></div>';document.getElementById('loansContainer').appendChild(div);document.getElementById('rmLoanBtn').disabled=false;manualOverride = false;updateDBRMax();autoSetLoan();}
+function removeLoan(){var c=document.getElementById('loansContainer');if(c.children.length>0){var last=c.children[c.children.length-1];var idx=parseInt(last.getAttribute('data-idx'));settledLoans.delete(idx);c.removeChild(last);loanCount=c.children.length>0?loanCount:0;document.getElementById('rmLoanBtn').disabled=c.children.length===0;manualOverride=false;updateDBRMax();autoSetLoan();}}
+function toggleSettleLoan(btn){var entry=btn.closest('.loan-entry');var idx=parseInt(entry.getAttribute('data-idx'));if(settledLoans.has(idx)){settledLoans.delete(idx);entry.classList.remove('settled');btn.textContent='Settle';btn.classList.remove('unsettled');}else{settledLoans.add(idx);entry.classList.add('settled');btn.textContent='Unsettle';btn.classList.add('unsettled');}manualOverride=false;updateDBRMax();autoSetLoan();}
 function getTotalLoanInst(){var total=0;document.querySelectorAll('.loan-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));if(!settledLoans.has(idx))total+=pf(e.querySelector('.loan-inst').value);});return total;}
 function getTotalLoanOS(){var total=0;document.querySelectorAll('.loan-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));if(settledLoans.has(idx))total+=pf(e.querySelector('.loan-os').value);});return total;}
-
-function addCard(){
-cardCount++;var div=document.createElement('div');div.className='card-entry';div.setAttribute('data-idx',cardCount);
-div.innerHTML='<div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-gray-500">Card '+cardCount+'</span><input type="text" placeholder="Settle Amt" class="entry-input cc-settle-amt hidden" style="width:80px;font-size:12px" oninput="onCCSettleAmt(this)"><button class="settle-btn" onclick="toggleSettleCard(this)" style="margin-left:auto">Settle</button></div><div class="flex gap-2 items-center flex-wrap"><select class="entry-select cc-bank" style="flex:1;min-width:70px" onchange="onCCBankChange(this)">'+bankOpts()+'</select><input type="text" placeholder="Limit" class="entry-input cc-limit" style="flex:1;min-width:70px" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,\'\');recalcAll()"><input type="text" placeholder="New Limit" class="entry-input cc-newlimit" style="flex:1;min-width:70px" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,\'\');recalcAll()"><input type="text" placeholder="O/S" class="entry-input cc-os" style="flex:1;min-width:60px" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,\'\');recalcAll()"></div>';
-document.getElementById('cardsContainer').appendChild(div);document.getElementById('rmCardBtn').disabled=false;
-manualOverride=false;
-updateDBRMax();
-autoSetLoan();
-}
-function removeCard(){
-var c=document.getElementById('cardsContainer');if(c.children.length>0){var last=c.children[c.children.length-1];var idx=parseInt(last.getAttribute('data-idx'));settledCards.delete(idx);origOSValues.delete(idx);c.removeChild(last);document.getElementById('rmCardBtn').disabled=c.children.length===0;manualOverride=false;updateDBRMax();autoSetLoan();}
-}
-function toggleSettleCard(btn){
-var entry=btn.closest('.card-entry');var idx=parseInt(entry.getAttribute('data-idx'));var bankSel = entry.querySelector('.cc-bank');
-var isAdcb = bankSel && bankSel.value === 'ADCB';
-if(isAdcb){
-    if(entry.classList.contains('settled')){
-        entry.classList.remove('settled');
-        btn.textContent='Settle';
-        btn.classList.remove('unsettled');
-    } else {
-        entry.classList.add('settled');
-        btn.textContent='Unsettle';
-        btn.classList.add('unsettled');
-    }
-    return;
-}
-var osInput=entry.querySelector('.cc-os');
-if(settledCards.has(idx)){
-    var origOS=settledCards.get(idx);
-    settledCards.delete(idx);
-    entry.classList.remove('settled');
-    btn.textContent='Settle';
-    btn.classList.remove('unsettled');
-    osInput.value=origOS;
-    origOSValues.set(idx,origOS);
-} else {
-    var curOS=pf(osInput.value);
-    settledCards.set(idx,curOS);
-    entry.classList.add('settled');
-    btn.textContent='Unsettle';
-    btn.classList.add('unsettled');
-}
-manualOverride=false;
-updateDBRMax();
-autoSetLoan();
-}
-function onCCBankChange(sel){var entry=sel.closest('.card-entry');var sa=entry.querySelector('.cc-settle-amt');if(sel.value==='ADCB')sa.classList.remove('hidden');else{sa.classList.add('hidden');sa.value='';}recalcAll();}
-function onCCSettleAmt(inp){
-var entry=inp.closest('.card-entry');var idx=parseInt(entry.getAttribute('data-idx'));var osInput=entry.querySelector('.cc-os');var bank=entry.querySelector('.cc-bank').value;
-if(bank==='ADCB'){
-    if(!origOSValues.has(idx))origOSValues.set(idx,pf(osInput.value));
-    var orig=origOSValues.get(idx);
-    var sa=pf(inp.value);
-    osInput.value=sa>0?Math.max(0,orig-sa).toFixed(2):orig;
-}
-manualOverride=false;
-updateDBRMax();
-autoSetLoan();
-}
-function getTotalCCLimit(){var total=0;document.querySelectorAll('.card-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));if(settledCards.has(idx))return;var lim=pf(e.querySelector('.cc-limit').value);var nl=e.querySelector('.cc-newlimit').value;total+=nl!==''?pf(nl):lim;});return total;}
+function addCard(){cardCount++;var div=document.createElement('div');div.className='card-entry';div.setAttribute('data-idx',cardCount);div.innerHTML='<div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-gray-500">Card '+cardCount+'</span><input type="text" placeholder="Settle Amt" class="entry-input cc-settle-amt hidden" style="width:80px;font-size:12px" oninput="onCCSettleAmt(this)"><button class="settle-btn" onclick="toggleSettleCard(this)" style="margin-left:auto">Settle</button></div><div class="flex gap-2 items-center flex-wrap"><select class="entry-select cc-bank" style="flex:1;min-width:70px" onchange="handleBankOther(this,\'card\');onCCBankChange(this)">'+bankOpts()+'</select><input type="text" placeholder="Limit" class="entry-input cc-limit" style="flex:1;min-width:70px" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,\'\');recalcAll()"><input type="text" placeholder="New Limit" class="entry-input cc-newlimit" style="flex:1;min-width:70px" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,\'\');recalcAll()"><input type="text" placeholder="O/S" class="entry-input cc-os" style="flex:1;min-width:60px" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,\'\');recalcAll()"></div>';document.getElementById('cardsContainer').appendChild(div);document.getElementById('rmCardBtn').disabled=false;manualOverride=false;updateDBRMax();autoSetLoan();}
+function removeCard(){var c=document.getElementById('cardsContainer');if(c.children.length>0){var last=c.children[c.children.length-1];var idx=parseInt(last.getAttribute('data-idx'));settledCards.delete(idx);origOSValues.delete(idx);c.removeChild(last);document.getElementById('rmCardBtn').disabled=c.children.length===0;manualOverride=false;updateDBRMax();autoSetLoan();}}
+function toggleSettleCard(btn){var entry=btn.closest('.card-entry');var idx=parseInt(entry.getAttribute('data-idx'));var bankSel = entry.querySelector('.cc-bank');var isAdcb = bankSel && bankSel.value === 'ADCB';if(isAdcb){if(entry.classList.contains('settled')){entry.classList.remove('settled');btn.textContent='Settle';btn.classList.remove('unsettled');} else {entry.classList.add('settled');btn.textContent='Unsettle';btn.classList.add('unsettled');}return;}var osInput=entry.querySelector('.cc-os');if(settledCards.has(idx)){var origOS=settledCards.get(idx);settledCards.delete(idx);entry.classList.remove('settled');btn.textContent='Settle';btn.classList.remove('unsettled');osInput.value=origOS;origOSValues.set(idx,origOS);} else {var curOS=pf(osInput.value);settledCards.set(idx,curOS);entry.classList.add('settled');btn.textContent='Unsettle';btn.classList.add('unsettled');}manualOverride=false;updateDBRMax();autoSetLoan();}
+function onCCBankChange(sel){var entry=sel.closest('.card-entry');var sa=entry.querySelector('.cc-settle-amt');if(sel.value==='ADCB')sa.classList.remove('hidden');else{sa.classList.add('hidden');sa.value='';}
+var newLimitDiv=entry.querySelector('.cc-newlimit');var osDiv=entry.querySelector('.cc-os');var settleBtn=entry.querySelector('.settle-btn');
+if(sel.value==='X-Sell'){newLimitDiv.style.display='none';osDiv.style.display='none';if(settleBtn)settleBtn.style.display='none';}else{newLimitDiv.style.display='';osDiv.style.display='';if(settleBtn)settleBtn.style.display='';}recalcAll();}
+function onCCSettleAmt(inp){var entry=inp.closest('.card-entry');var idx=parseInt(entry.getAttribute('data-idx'));var osInput=entry.querySelector('.cc-os');var bank=entry.querySelector('.cc-bank').value;if(bank==='ADCB'){if(!origOSValues.has(idx))origOSValues.set(idx,pf(osInput.value));var orig=origOSValues.get(idx);var sa=pf(inp.value);osInput.value=sa>0?Math.max(0,orig-sa).toFixed(2):orig;}manualOverride=false;updateDBRMax();autoSetLoan();}
+function getTotalCCLimit(){var total=0;document.querySelectorAll('.card-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));if(settledCards.has(idx))return;var lim=pf(e.querySelector('.cc-limit').value);var nl=e.querySelector('.cc-newlimit');if(nl && nl.style.display!=='none' && nl.value!=='')total+=pf(nl.value);else total+=lim;});return total;}
 function getTotalCCOS(){var total=0;document.querySelectorAll('.card-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));var bank=e.querySelector('.cc-bank').value;if(settledCards.has(idx)){total+=settledCards.get(idx)||pf(e.querySelector('.cc-os').value);}else if(bank==='ADCB'){var sa=pf(e.querySelector('.cc-settle-amt').value);if(sa>0)total+=sa;}});return total;}
 function getAdcbSettleAmounts(){var amounts=[];document.querySelectorAll('.card-entry').forEach(function(e){var bank=e.querySelector('.cc-bank').value;var sa=e.querySelector('.cc-settle-amt');if(bank==='ADCB' && sa && pf(sa.value)>0){amounts.push(pf(sa.value));}});return amounts;}
-
-// ---------------------- ADD-BACK ----------------------
-function addAddbackEntry(){
-addbackCount++;var idx=addbackCount;addbackData[idx]={type:'',values:{}};
-var div=document.createElement('div');div.className='p-3 border border-gray-200 rounded-xl mb-2';div.setAttribute('data-ab-idx',idx);
-div.innerHTML='<select class="entry-select w-full mb-2" style="font-size:14px" onchange="onAbTypeChange(this,'+idx+')"><option value="">Select Add-back Type</option><option value="hra">HRA</option><option value="airfare">Airfare Allowance</option><option value="varibles">Variables(OT/SC/Others)</option></select><div class="ab-fields" id="abFields'+idx+'"></div>';
-document.getElementById('addbackList').appendChild(div);document.getElementById('rmAbBtn').disabled=false;
-}
-function removeAddbackEntry(){
-var list=document.getElementById('addbackList');if(list.children.length>0){var last=list.children[list.children.length-1];var idx=parseInt(last.getAttribute('data-ab-idx'));delete addbackData[idx];list.removeChild(last);document.getElementById('rmAbBtn').disabled=list.children.length===0;manualOverride=false;updateDBRMax();autoSetLoan();}
-}
-function onAbTypeChange(sel,idx){
-var type=sel.value;addbackData[idx]={type:type,values:{}};var box=document.getElementById('abFields'+idx);
-if(!type){box.innerHTML='';manualOverride=false;updateDBRMax();autoSetLoan();return;}
-var html='';
-if(type==='hra'||type==='airfare'){
-html+='<div class="flex gap-3 items-center mb-2"><label class="text-sm font-medium"><input type="radio" name="abPeriod'+idx+'" value="yearly" class="mr-1" onchange="addbackData['+idx+'].values.period=\'yearly\';manualOverride=false;updateDBRMax();autoSetLoan()"> Yearly</label><label class="text-sm font-medium"><input type="radio" name="abPeriod'+idx+'" value="monthly" class="mr-1" onchange="addbackData['+idx+'].values.period=\'monthly\';manualOverride=false;updateDBRMax();autoSetLoan()"> Monthly</label></div>';
-html+='<input type="number" placeholder="Amount" class="entry-input w-full" oninput="addbackData['+idx+'].values.amount=this.value;manualOverride=false;updateDBRMax();autoSetLoan()">';
-}else{
-html+='<div class="grid grid-cols-3 gap-2">';for(var i=1;i<=6;i++)html+='<input type="number" placeholder="Month '+i+'" class="entry-input" oninput="addbackData['+idx+'].values.m'+i+'=this.value;manualOverride=false;updateDBRMax();autoSetLoan()">';html+='</div>';
-}
-box.innerHTML=html;manualOverride=false;updateDBRMax();autoSetLoan();
-}
-
-// ---------------------- FIRST PAYMENT DATE ----------------------
-function calcFPDFromDate(baseDate){
-var range=getDayRange();var instDay=getInstDate();
-var minDate=new Date(baseDate);minDate.setDate(baseDate.getDate()+range[0]);
-var maxDate=new Date(baseDate);maxDate.setDate(baseDate.getDate()+range[1]);
-var candidates=[];
-for(var m=-1;m<=4;m++){var d=new Date(baseDate.getFullYear(),baseDate.getMonth()+m,instDay);if(d>=minDate&&d<=maxDate&&d>baseDate)candidates.push(d);}
-if(candidates.length>0)return candidates[0];return maxDate;
-}
+function getBankName(container, type){var selectOrInput=container.querySelector(type==='loan'?'.loan-bank':'.cc-bank');if(!selectOrInput)return '';if(selectOrInput.tagName==='SELECT')return selectOrInput.value;else return selectOrInput.value;}
+function handleBankOther(sel, type){if(sel.value==='OTHER'){var input=document.createElement('input');input.type='text';input.className='entry-input';input.style.flex='1';input.style.minWidth='70px';input.value='';input.placeholder='Enter bank name';input.onblur=function(){sel.parentNode.replaceChild(sel, input);sel.value=input.value;sel.style.display='';};input.oninput=function(){recalcAll();};sel.parentNode.replaceChild(input, sel);recalcAll();}}
+function addAddbackEntry(){addbackCount++;var idx=addbackCount;addbackData[idx]={type:'',values:{}};var div=document.createElement('div');div.className='p-3 border border-gray-200 rounded-xl mb-2';div.setAttribute('data-ab-idx',idx);div.innerHTML='<select class="entry-select w-full mb-2" style="font-size:14px" onchange="onAbTypeChange(this,'+idx+')"><option value="">Select Add-back Type</option><option value="hra">HRA</option><option value="airfare">Airfare Allowance</option><option value="varibles">Variables(OT/SC/Others)</option></select><div class="ab-fields" id="abFields'+idx+'"></div>';document.getElementById('addbackList').appendChild(div);document.getElementById('rmAbBtn').disabled=false;}
+function removeAddbackEntry(){var list=document.getElementById('addbackList');if(list.children.length>0){var last=list.children[list.children.length-1];var idx=parseInt(last.getAttribute('data-ab-idx'));delete addbackData[idx];list.removeChild(last);document.getElementById('rmAbBtn').disabled=list.children.length===0;manualOverride=false;updateDBRMax();autoSetLoan();}}
+function onAbTypeChange(sel,idx){var type=sel.value;addbackData[idx]={type:type,values:{}};var box=document.getElementById('abFields'+idx);if(!type){box.innerHTML='';manualOverride=false;updateDBRMax();autoSetLoan();return;}var html='';if(type==='hra'||type==='airfare'){html+='<div class="flex gap-3 items-center mb-2"><label class="text-sm font-medium"><input type="radio" name="abPeriod'+idx+'" value="yearly" class="mr-1" onchange="addbackData['+idx+'].values.period=\'yearly\';manualOverride=false;updateDBRMax();autoSetLoan()"> Yearly</label><label class="text-sm font-medium"><input type="radio" name="abPeriod'+idx+'" value="monthly" class="mr-1" onchange="addbackData['+idx+'].values.period=\'monthly\';manualOverride=false;updateDBRMax();autoSetLoan()"> Monthly</label></div>';html+='<input type="number" placeholder="Amount" class="entry-input w-full" oninput="addbackData['+idx+'].values.amount=this.value;manualOverride=false;updateDBRMax();autoSetLoan()">';}else{html+='<div class="grid grid-cols-3 gap-2">';for(var i=1;i<=6;i++)html+='<input type="number" placeholder="Month '+i+'" class="entry-input" oninput="addbackData['+idx+'].values.m'+i+'=this.value;manualOverride=false;updateDBRMax();autoSetLoan()">';html+='</div>';}box.innerHTML=html;manualOverride=false;updateDBRMax();autoSetLoan();}
+function calcFPDFromDate(baseDate){var range=getDayRange();var instDay=getInstDate();var minDate=new Date(baseDate);minDate.setDate(baseDate.getDate()+range[0]);var maxDate=new Date(baseDate);maxDate.setDate(baseDate.getDate()+range[1]);var candidates=[];for(var m=-1;m<=4;m++){var d=new Date(baseDate.getFullYear(),baseDate.getMonth()+m,instDay);if(d>=minDate&&d<=maxDate&&d>baseDate)candidates.push(d);}if(candidates.length>0)return candidates[0];return maxDate;}
 function calcFPD(){var today=new Date();today.setHours(0,0,0,0);return calcFPDFromDate(today);}
 function formatDate(d){var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();}
 function calcGraceDays(){var today=new Date();today.setHours(0,0,0,0);var fpd=calcFPD();return Math.floor((fpd-today)/(1000*60*60*24));}
-function calcDisbFPD(){
-var dateVal=document.getElementById('ddDisbDate').value;
-if(!dateVal){document.getElementById('ddFPD').textContent='-';recalcAll();return;}
-var disbDate=new Date(dateVal);disbDate.setHours(0,0,0,0);
-var fpd=calcFPDFromDate(disbDate);
-document.getElementById('ddFPD').textContent=formatDate(fpd);recalcAll();
-}
-
-// ---------------------- PREFERRED EMI ----------------------
-function onPrefEMI(){
-var prefEMI=pf(document.getElementById('dPrefEMI').value);var rate=getEffRate();var tenure=pi(document.getElementById('tenureInput').value);
-if(prefEMI<=0||rate<=0||tenure<=0)return;
-var mr=rate/12/100;var gm=getGraceMonths();var adjEMI=prefEMI;
-if(gm===1)adjEMI=prefEMI/(1+mr);else if(gm===2)adjEMI=prefEMI/(1+2*mr);
-var la=adjEMI/(mr*Math.pow(1+mr,tenure)/(Math.pow(1+mr,tenure)-1));
-if(la>0){
-    document.getElementById('genLoanAmt').value=Math.floor(la);
-    manualOverride = true;
-    updateSliderFromInput();
-    recalcAll();
-}
-}
-
-// ---------------------- TENOR ----------------------
-function onTenorRadio(radio){
-document.getElementById('tenureInput').value=radio.value;
-updateDBRMax();
-if(manualOverride){
-    checkAndCapLoan();
-} else {
-    autoSetLoan();
-}
-recalcAll();
-}
-function onTenureInput(el){
-el.value=el.value.replace(/[^0-9]/g,'').slice(0,2);
-document.querySelectorAll('.tenor-radio').forEach(function(r){r.checked=r.value===el.value;});
-updateDBRMax();
-if(manualOverride){
-    checkAndCapLoan();
-} else {
-    autoSetLoan();
-}
-recalcAll();
-}
-
-function updateSliderFromInput(){
-var val=pf(document.getElementById('genLoanAmt').value);var slider=document.getElementById('loanSlider');
-if(val>=0 && val<=parseFloat(slider.max))slider.value=val;
-}
-function onSliderChange(slider){
-    var val = slider.value;
-    document.getElementById('genLoanAmt').value = val;
-    manualOverride = true;
-    recalcAll();
-}
-function onLoanAmtManual(el){
-    el.value = el.value.replace(/[^0-9]/g,'');
-    var val = pf(el.value);
-    var maxLoan = getDBRMaxLoan();
-    if(val > maxLoan){
-        val = maxLoan;
-        el.value = val;
-        manualOverride = false;
-    } else {
-        manualOverride = true;
-    }
-    updateSliderFromInput();
-    recalcAll();
-}
-function applyIdealLoan(){
-    var maxLoan = getDBRMaxLoan();
-    if(maxLoan > 0){
-        document.getElementById('genLoanAmt').value = maxLoan;
-        document.getElementById('loanSlider').value = maxLoan;
-        manualOverride = false;
-        recalcAll();
-        showToast('Loan updated to ideal: AED '+fmtInt(maxLoan));
-    }
-}
-
-// Multiples manual edit
-function onMultiplesChange(){
-var multInput = document.getElementById('dMultiples');
-multInput.value = multInput.value.replace(/[^0-9]/g, '');
-manualOverride = false;
-updateDBRMax();
-autoSetLoan();
-}
-
-// ---------------------- SETTLED LIST (for Disbursal) ----------------------
-function getSettledList(){
-var items=[];
-document.querySelectorAll('.loan-entry').forEach(function(e){
-var idx=parseInt(e.getAttribute('data-idx'));
-if(settledLoans.has(idx)){var bank=e.querySelector('.loan-bank').value||'Bank';var type=e.querySelector('.loan-type').value||'Loan';var os=pf(e.querySelector('.loan-os').value);items.push({label:bank+' - '+type,amount:os});}
-});
-document.querySelectorAll('.card-entry').forEach(function(e){
-var idx=parseInt(e.getAttribute('data-idx'));
-var bank=e.querySelector('.cc-bank').value;
-if(bank === 'ADCB') return;
-if(settledCards.has(idx) && settledCards.get(idx)!==0){
-    var os=settledCards.get(idx);
-    items.push({label:bank+' - Credit Card',amount:os});
-}
-});
-return items;
-}
-
-// ---------------------- MAIN RECALC ----------------------
-function recalcAll(){
-var salary=getSalary();var abTotal=calcAddbackTotal();var gross=salary+abTotal;
-var rate=getEffRate();var tenure=pi(document.getElementById('tenureInput').value);
-var loanAmt=pf(document.getElementById('genLoanAmt').value);
-var closureFee=pf(document.getElementById('closureFee').value);
-var rateDisc=pf(document.getElementById('rateDiscount').value);
-var catBonus=getCatTenureBonus();
-
-if(abTotal>0){document.getElementById('grossLine').classList.remove('hidden');document.getElementById('grossVal').textContent=fmtInt(gross);document.getElementById('abTotal').classList.remove('hidden');document.getElementById('abTotalVal').textContent=fmtInt(abTotal);}
-else{document.getElementById('grossLine').classList.add('hidden');document.getElementById('abTotal').classList.add('hidden');}
-document.getElementById('abModalTotal').textContent=fmt(abTotal);
-
-var totalLoanInst=getTotalLoanInst();var ccLimit=getTotalCCLimit();var dbrCC=ccLimit*0.05;var currentLiab=totalLoanInst+dbrCC;
-var emi=calcEMIWithGrace(loanAmt,rate,tenure);
-var allowedLiab=gross>0?gross*(dbrThreshold/100):0;
-var newTotalLiab=currentLiab+emi;var dbrPct=gross>0?(newTotalLiab/gross)*100:0;var availLiab=allowedLiab-newTotalLiab;
-var totalOS=getTotalCCOS()+getTotalLoanOS();
-var pfAmt=getDiscountedPF(loanAmt);
-
-var maxElig = getMaxEligibilityByMultiplier();
-var flatRate=rate>0?rate/1.833:0;
-var totalPay=emi*tenure;var totalInt=Math.max(0,totalPay-loanAmt);
-var fpd=calcFPD();var graceDays=calcGraceDays();
-var cashInHand=loanAmt-totalOS-closureFee;
-if(document.getElementById('netAmtCb').checked)cashInHand-=pfAmt;
-cashInHand-=pf(document.getElementById('dCashOut').value);
-var loanMult=salary>0&&loanAmt>0?(loanAmt/salary).toFixed(2)+'x':'-';
-
-var effRateText=rate.toFixed(2)+'%';
-var discParts=[];
-if(rateDisc>0)discParts.push('-'+rateDisc.toFixed(2)+'%');
-if(catBonus>0)discParts.push('-'+catBonus.toFixed(2)+'% tenure');
-if(discParts.length>0)effRateText+=(' ('+discParts.join(' ')+')');
-
-document.getElementById('dbrDisplay').textContent=dbrPct.toFixed(2)+'%';
-var dbrPill=document.getElementById('dbrDisplay').parentElement;
-if(dbrPct>dbrThreshold+0.001){document.getElementById('dbrDisplay').classList.add('dbr-high');dbrPill.classList.add('dbr-warn');}
-else{document.getElementById('dbrDisplay').classList.remove('dbr-high');dbrPill.classList.remove('dbr-warn');}
-
-// Loan Details tab
-document.getElementById('dLoanAmt').textContent='AED '+fmtInt(loanAmt);
-document.getElementById('dMaxElig').textContent='AED '+fmtInt(maxElig);
-document.getElementById('dEffRate').textContent=effRateText;
-document.getElementById('dTenure').textContent=tenure+' months';
-document.getElementById('dEMI').textContent='AED '+fmt(emi);
-document.getElementById('dFPD').textContent=formatDate(fpd);
-document.getElementById('dTotalPay').textContent='AED '+fmt(totalPay);
-document.getElementById('dPF').textContent='AED '+fmt(pfAmt);
-document.getElementById('dTotalOSCompact').textContent='AED '+fmt(totalOS);
-document.getElementById('dCashInHand').textContent='AED '+fmt(cashInHand);
-// Expanded
-document.getElementById('dFlatRate').textContent=flatRate.toFixed(2)+'%';
-document.getElementById('dStartPeriod').textContent='up to '+getStartPeriod()+' Days';
-document.getElementById('dGrace').textContent=graceDays+' days';
-document.getElementById('dTotalInt').textContent='AED '+fmt(totalInt);
-document.getElementById('dMultiples').value = getAutoMultiples();
-document.getElementById('dLoanMult').textContent=loanMult;
-document.getElementById('dAllowedLiab').textContent='AED '+fmt(allowedLiab);
-document.getElementById('dTotalLiab').textContent='AED '+fmt(currentLiab);
-document.getElementById('dAvailLiab').textContent='AED '+fmt(availLiab);
-
-document.getElementById('genEmiDisplay').textContent='EMI: '+fmt(emi);
-
-// Liabilities modal
-document.getElementById('lTotalCC').textContent='AED '+fmt(ccLimit);
-document.getElementById('lDBRCC').textContent='AED '+fmt(dbrCC);
-document.getElementById('lNewTotalLiab').textContent='AED '+fmt(newTotalLiab);
-document.getElementById('lTotalOS').textContent='AED '+fmt(totalOS);
-
-// DBR error
-var errBox=document.getElementById('dbrErrorBox');
-if(dbrPct>dbrThreshold+0.001&&loanAmt>0&&gross>0){
-var maxLoan = getDBRMaxLoan();
-idealLoanAmt = maxLoan;
-errBox.textContent='\u26a0 DBR exceeds '+dbrThreshold+'%! Ideal amount: AED '+fmtInt(idealLoanAmt)+' (click to apply)';
-errBox.classList.remove('hidden');
-}else{errBox.classList.add('hidden');}
-
-updateCCSuggestion(gross,dbrPct,availLiab,ccLimit,newTotalLiab,allowedLiab);
-updatePFDropdown(loanAmt);
-
-// Disbursal Details tab
-document.getElementById('ddLoanAmt').textContent='AED '+fmtInt(loanAmt);
-document.getElementById('ddTenure').textContent=tenure+' months';
-document.getElementById('ddEffRate').textContent=effRateText;
-document.getElementById('ddPF').textContent='AED '+fmt(pfAmt);
-document.getElementById('ddEMI').textContent='AED '+fmt(emi);
-document.getElementById('ddPFVal').textContent='AED '+fmt(pfAmt);
-
-var settledItems=getSettledList();var settledHTML='';var totalSettled=0;
-settledItems.forEach(function(item){settledHTML+='<div class="disb-item"><span class="disb-label">'+item.label+'</span><span class="disb-val">AED '+fmt(item.amount)+'</span></div>';totalSettled+=item.amount;});
-document.getElementById('ddSettledList').innerHTML=settledHTML;
-
-var adcbSettleAmts=getAdcbSettleAmounts();var adcbHTML='';var totalAdcbSettle=0;
-adcbSettleAmts.forEach(function(amt){adcbHTML+='<div class="disb-item"><span class="disb-label">ADCB Card Settlement</span><span class="disb-val">AED '+fmt(amt)+'</span></div>';totalAdcbSettle+=amt;});
-document.getElementById('ddAdcbSettleList').innerHTML=adcbHTML;
-
-var totalDed=pfAmt+totalSettled+totalAdcbSettle;
-document.getElementById('ddTotalDed').textContent='AED '+fmt(totalDed);
-document.getElementById('ddAmtReceive').textContent='AED '+fmt(loanAmt-totalDed);
-
-updateMessage();
-updateComparisonTable();
-}
-
-function updatePFDropdown(la){
-var sel=document.getElementById('pfDiscount');var base=calcPF(la);
-for(var i=0;i<sel.options.length;i++){var disc=parseInt(sel.options[i].value);var amt=base*(1-disc/100);sel.options[i].textContent=disc+'% (AED '+fmt(amt)+')';}
-}
-function updateCCSuggestion(gross,dbrPct,availLiab,ccLimit,newTotalLiab,allowedLiab){
-var box=document.getElementById('ccSuggest');if(gross<=0){box.classList.add('hidden');return;}
-if(dbrPct>dbrThreshold+0.001){var excess=newTotalLiab-allowedLiab;if(excess>0){var ccReduce=excess/0.05;var targetCC=Math.max(0,ccLimit-ccReduce);box.textContent='\u26a0 DBR exceeds '+dbrThreshold+'%. Reduce total CC limits to AED '+fmt(targetCC)+'.';box.className='cc-suggest warn';box.classList.remove('hidden');}}
-else if(availLiab>0){var optCC=availLiab/0.05;if(optCC>=3000){box.textContent='\u2713 Optimal CC limit: AED '+fmt(optCC);box.className='cc-suggest good';box.classList.remove('hidden');}else{box.classList.add('hidden');}}
-else{box.classList.add('hidden');}
-}
-
-// ---------------------- MESSAGE ----------------------
-function updateMessage(){
-var name=document.getElementById('custName').value.trim();
-var loanAmt=pf(document.getElementById('genLoanAmt').value);
-var rate=getEffRate();var baseRate=pf(document.getElementById('rate').value);
-var rateDisc=pf(document.getElementById('rateDiscount').value);
-var catBonus=getCatTenureBonus();
-var tenure=pi(document.getElementById('tenureInput').value);
-var emi=calcEMIWithGrace(loanAmt,rate,tenure);
-var flatRate=rate>0?rate/1.833:0;
-var maxElig=getMaxEligibilityByMultiplier();
-var totalPay=emi*tenure;
-var pfAmt=getDiscountedPF(loanAmt);var pfDisc=pi(document.getElementById('pfDiscount').value);
-var closureFee=pf(document.getElementById('closureFee').value);
-var totalOS=getTotalCCOS()+getTotalLoanOS();
-var cashInHand=loanAmt-totalOS-closureFee;
-if(document.getElementById('netAmtCb').checked)cashInHand-=pfAmt;
-cashInHand-=pf(document.getElementById('dCashOut').value);
-var sp=getStartPeriod();var userNote=document.getElementById('specialNote').value.trim();
-
-var effRateStr=rate.toFixed(2)+'%';
-var discBits=[];
-if(rateDisc>0)discBits.push(rateDisc.toFixed(2)+'% discount');
-if(catBonus>0)discBits.push(catBonus.toFixed(2)+'% tenure bonus');
-if(discBits.length>0)effRateStr+=' ('+discBits.join(', ')+')';
-
-var msg='';
-if(name)msg+='*Customer: '+name+'*\n\n';
-
-if(currentTab==='loan'){
-msg+='*Loan Details*\n';
-msg+='Loan Amount: AED '+fmt(loanAmt)+'\n';
-msg+='Monthly Installment: AED '+fmt(emi)+'\n';
-msg+='Tenure: '+tenure+' Months\n';
-msg+='Effective Rate: '+effRateStr+'\n';
-msg+='Flat Rate: '+flatRate.toFixed(2)+'%\n';
-msg+='Max Loan Eligibility: AED '+fmt(maxElig)+'\n';
-msg+='Start Period: up to '+sp+' Days\n';
-msg+='Total Payment: AED '+fmt(totalPay)+'\n';
-if(pfDisc>0)msg+='Processing Fees(+VAT) Discount ('+pfDisc+'%): AED '+fmt(pfAmt)+'\n';
-else msg+='Processing Fees(+VAT): AED '+fmt(pfAmt)+'\n';
-msg+='Insurance Fees: AED 0\n';
-if(closureFee>0)msg+='Closure Fee: AED '+fmt(closureFee)+'\n';
-msg+='Current Outstanding: AED '+fmt(totalOS)+'\n';
-msg+='Cash In Hand: AED '+fmt(cashInHand)+'\n';
-var allNotes=buildSpecialNotes(userNote);
-if(allNotes)msg+='\n'+allNotes;
-}else{
-var settledItems=getSettledList();var totalSettled=0;
-settledItems.forEach(function(it){totalSettled+=it.amount;});
-var adcbSettleAmts=getAdcbSettleAmounts();var totalAdcbSettle=0;
-adcbSettleAmts.forEach(function(amt){totalAdcbSettle+=amt;});
-var totalDed=pfAmt+totalSettled+totalAdcbSettle;var amtReceive=loanAmt-totalDed;
-var disbFPDText=document.getElementById('ddFPD').textContent;
-msg+='*Disbursal Details*\n';
-msg+='Loan Amount: AED '+fmt(loanAmt)+'\n';
-msg+='Tenure: '+tenure+' Months\n';
-msg+='Effective Rate: '+effRateStr+'\n';
-msg+='EMI: AED '+fmt(emi)+'\n';
-msg+='First Payment Date: '+disbFPDText+'\n\n';
-msg+='*FEES & DEDUCTIONS*\n';
-msg+='Processing Fees+VAT: AED '+fmt(pfAmt)+'\n';
-settledItems.forEach(function(it){msg+=it.label+': AED '+fmt(it.amount)+'\n';});
-adcbSettleAmts.forEach(function(amt){msg+='ADCB Card Settlement: AED '+fmt(amt)+'\n';});
-msg+='Total Deductions: AED '+fmt(totalDed)+'\n\n';
-msg+='*AMOUNT TO RECEIVE: AED '+fmt(amtReceive)+'*\n';
-}
-
-msg+='\n-------------------------\n';
-msg+='_The specifics of the installment plan and associated offerings may vary slightly based on the information provided in your profile._';
-document.getElementById('msgBox').value=msg;
-}
-
-function buildSpecialNotes(userNote){
-var notes='';
-if(userNote){userNote.split('\n').forEach(function(l){if(l.trim())notes+='\u2022 '+l.trim()+'\n';});}
-document.querySelectorAll('.loan-entry').forEach(function(e){
-var idx=parseInt(e.getAttribute('data-idx'));
-if(settledLoans.has(idx)){var bank=e.querySelector('.loan-bank').value;var type=e.querySelector('.loan-type').value;var os=e.querySelector('.loan-os').value;notes+='\u2022 '+bank+' '+type+' outstanding AED '+fmt(pf(os))+' settled from loan proceeds\n';}
-});
-document.querySelectorAll('.card-entry').forEach(function(e){
-var idx=parseInt(e.getAttribute('data-idx'));var bank=e.querySelector('.cc-bank').value;var limit=e.querySelector('.cc-limit').value;var nl=e.querySelector('.cc-newlimit').value;
-if(bank==='ADCB'){
-    var sa=e.querySelector('.cc-settle-amt');
-    if(sa && pf(sa.value)>0) notes+='\u2022 '+bank+' Credit Card partial settlement AED '+fmt(pf(sa.value))+' from loan proceeds\n';
-} else {
-    if(settledCards.has(idx)){notes+='\u2022 '+bank+' Credit Card settle AED '+fmt(settledCards.get(idx))+' from loan proceeds\n';}
-}
-if(bank==='X-Sell'){var lv=nl||limit;if(lv)notes+='\u2022 ADCB credit card will be issued with limit AED '+fmt(pf(lv))+'\n';}
-if(nl&&pf(nl)!==pf(limit))notes+='\u2022 '+bank+' CC limit reduce from AED '+fmt(pf(limit))+' to AED '+fmt(pf(nl))+'\n';
-});
-if(notes)return'Special Note:\n'+notes;return'';
-}
-
+function calcDisbFPD(){var dateVal=document.getElementById('ddDisbDate').value;if(!dateVal){document.getElementById('ddFPD').textContent='-';recalcAll();return;}var disbDate=new Date(dateVal);disbDate.setHours(0,0,0,0);var fpd=calcFPDFromDate(disbDate);document.getElementById('ddFPD').textContent=formatDate(fpd);recalcAll();}
+function onPrefEMI(){var prefEMI=pf(document.getElementById('dPrefEMI').value);var rate=getEffRate();var tenure=pi(document.getElementById('tenureInput').value);if(prefEMI<=0||rate<=0||tenure<=0)return;var mr=rate/12/100;var gm=getGraceMonths();var adjEMI=prefEMI;if(gm===1)adjEMI=prefEMI/(1+mr);else if(gm===2)adjEMI=prefEMI/(1+2*mr);var la=adjEMI/(mr*Math.pow(1+mr,tenure)/(Math.pow(1+mr,tenure)-1));if(la>0){document.getElementById('genLoanAmt').value=fmtInt(Math.floor(la));manualOverride = true;updateSliderFromInput();recalcAll();}}
+function onTenorRadio(radio){document.getElementById('tenureInput').value=radio.value;updateDBRMax();if(manualOverride){checkAndCapLoan();}else{autoSetLoan();}recalcAll();}
+function onTenureInput(el){el.value=el.value.replace(/[^0-9]/g,'').slice(0,2);document.querySelectorAll('.tenor-radio').forEach(function(r){r.checked=r.value===el.value;});updateDBRMax();if(manualOverride){checkAndCapLoan();}else{autoSetLoan();}recalcAll();}
+function updateSliderFromInput(){var val=pf(document.getElementById('genLoanAmt').value);var slider=document.getElementById('loanSlider');if(val>=0 && val<=parseFloat(slider.max))slider.value=val;}
+function onSliderChange(slider){var val = slider.value;document.getElementById('genLoanAmt').value = fmtInt(val);manualOverride = true;recalcAll();}
+function onLoanAmtManual(el){var raw=el.value.replace(/,/g,'');if(!/^\d*$/.test(raw)){el.value=fmtInt(pf(raw));return;}var val = pf(raw);var maxLoan = getDBRMaxLoan();if(val > maxLoan){val = maxLoan;manualOverride = false;showToast('Loan amount capped to DBR limit: AED '+fmtInt(maxLoan));} else {manualOverride = true;}el.value = fmtInt(val);updateSliderFromInput();recalcAll();}
+function formatLoanAmount(input){var val=pf(input.value);if(!isNaN(val) && val>0){input.value=fmtInt(val);}}
+function applyIdealLoan(){var maxLoan = getDBRMaxLoan();if(maxLoan > 0){document.getElementById('genLoanAmt').value = fmtInt(maxLoan);document.getElementById('loanSlider').value = maxLoan;manualOverride = false;recalcAll();showToast('Loan updated to ideal: AED '+fmtInt(maxLoan));}}
+function onMultiplesChange(){var multInput = document.getElementById('dMultiples');multInput.value = multInput.value.replace(/[^0-9]/g, '');manualOverride = false;updateDBRMax();autoSetLoan();}
+function getSettledList(){var items=[];document.querySelectorAll('.loan-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));if(settledLoans.has(idx)){var bank=getBankName(e,'loan');var type=e.querySelector('.loan-type').value||'Loan';var os=pf(e.querySelector('.loan-os').value);items.push({label:bank+' - '+type,amount:os,key:'loan_'+idx});}});document.querySelectorAll('.card-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));var bank=getBankName(e,'card');if(bank === 'ADCB') return;if(settledCards.has(idx) && settledCards.get(idx)!==0){var os=settledCards.get(idx);var limit=pf(e.querySelector('.cc-limit').value);items.push({label:bank+' - Credit Card',amount:os,limit:limit,key:'card_'+idx});}});return items;}
+function recalcAll(){var salary=getSalary();var abTotal=calcAddbackTotal();var gross=salary+abTotal;var rate=getEffRate();var tenure=pi(document.getElementById('tenureInput').value);var loanAmt=pf(document.getElementById('genLoanAmt').value);var closureFee=pf(document.getElementById('closureFee').value);var rateDisc=pf(document.getElementById('rateDiscount').value);var catBonus=getCatTenureBonus();if(abTotal>0){document.getElementById('grossLine').classList.remove('hidden');document.getElementById('grossVal').textContent=fmtInt(gross);document.getElementById('abTotal').classList.remove('hidden');document.getElementById('abTotalVal').textContent=fmtInt(abTotal);}else{document.getElementById('grossLine').classList.add('hidden');document.getElementById('abTotal').classList.add('hidden');}document.getElementById('abModalTotal').textContent=fmt(abTotal);var totalLoanInst=getTotalLoanInst();var ccLimit=getTotalCCLimit();var dbrCC=ccLimit*0.05;var currentLiab=totalLoanInst+dbrCC;var emi=calcEMIWithGrace(loanAmt,rate,tenure);var allowedLiab=gross>0?gross*(dbrThreshold/100):0;var newTotalLiab=currentLiab+emi;var dbrPct=gross>0?(newTotalLiab/gross)*100:0;var availLiab=allowedLiab-newTotalLiab;var totalOS=getTotalCCOS()+getTotalLoanOS();var pfAmt=getDiscountedPF(loanAmt);var maxElig = getMaxEligibilityByMultiplier();var flatRate=rate>0?rate/1.833:0;var totalPay=emi*tenure;var totalInt=Math.max(0,totalPay-loanAmt);var fpd=calcFPD();var graceDays=calcGraceDays();var cashInHand=loanAmt-totalOS-closureFee;if(document.getElementById('netAmtCb').checked)cashInHand-=pfAmt;cashInHand-=pf(document.getElementById('dCashOut').value);var loanMult=salary>0&&loanAmt>0?(loanAmt/salary).toFixed(2)+'x':'-';var effRateText=rate.toFixed(2)+'%';var discParts=[];if(rateDisc>0)discParts.push('-'+rateDisc.toFixed(2)+'%');if(catBonus>0)discParts.push('-'+catBonus.toFixed(2)+'% tenure');if(discParts.length>0)effRateText+=(' ('+discParts.join(' ')+')');document.getElementById('dbrDisplay').textContent=dbrPct.toFixed(2)+'%';var dbrPill=document.getElementById('dbrDisplay').parentElement;if(dbrPct>dbrThreshold+0.001){document.getElementById('dbrDisplay').classList.add('dbr-high');dbrPill.classList.add('dbr-warn');}else{document.getElementById('dbrDisplay').classList.remove('dbr-high');dbrPill.classList.remove('dbr-warn');}document.getElementById('dLoanAmt').textContent='AED '+fmtInt(loanAmt);document.getElementById('dMaxElig').textContent='AED '+fmtInt(maxElig);document.getElementById('dEffRate').textContent=effRateText;document.getElementById('dTenure').textContent=tenure+' months';document.getElementById('dEMI').textContent='AED '+fmt(emi);document.getElementById('dFPD').textContent=formatDate(fpd);document.getElementById('dTotalPay').textContent='AED '+fmt(totalPay);document.getElementById('dPF').textContent='AED '+fmt(pfAmt);document.getElementById('dTotalOSCompact').textContent='AED '+fmt(totalOS);document.getElementById('dCashInHand').textContent='AED '+fmt(cashInHand);document.getElementById('dFlatRate').textContent=flatRate.toFixed(2)+'%';document.getElementById('dStartPeriod').textContent='up to '+getStartPeriod()+' Days';document.getElementById('dGrace').textContent=graceDays+' days';document.getElementById('dTotalInt').textContent='AED '+fmt(totalInt);document.getElementById('dLoanMult').textContent=loanMult;document.getElementById('dAllowedLiab').textContent='AED '+fmt(allowedLiab);document.getElementById('dTotalLiab').textContent='AED '+fmt(currentLiab);document.getElementById('dAvailLiab').textContent='AED '+fmt(availLiab);document.getElementById('genEmiDisplay').textContent='EMI: '+fmt(emi);document.getElementById('lTotalCC').textContent='AED '+fmt(ccLimit);document.getElementById('lDBRCC').textContent='AED '+fmt(dbrCC);document.getElementById('lNewTotalLiab').textContent='AED '+fmt(newTotalLiab);document.getElementById('lTotalOS').textContent='AED '+fmt(totalOS);var errBox=document.getElementById('dbrErrorBox');if(dbrPct>dbrThreshold+0.001&&loanAmt>0&&gross>0){var maxLoan = getDBRMaxLoan();idealLoanAmt = maxLoan;errBox.textContent='\u26a0 DBR exceeds '+dbrThreshold+'%! Ideal amount: AED '+fmtInt(idealLoanAmt)+' (click to apply)';errBox.classList.remove('hidden');}else{errBox.classList.add('hidden');}updateCCSuggestion(gross,dbrPct,availLiab,ccLimit,newTotalLiab,allowedLiab);updatePFDropdown(loanAmt);document.getElementById('ddLoanAmt').textContent='AED '+fmtInt(loanAmt);document.getElementById('ddTenure').textContent=tenure+' months';document.getElementById('ddEffRate').textContent=effRateText;document.getElementById('ddPF').textContent='AED '+fmt(pfAmt);document.getElementById('ddEMI').textContent='AED '+fmt(emi);document.getElementById('ddPFVal').textContent='AED '+fmt(pfAmt);var settledItems=getSettledList();var settledHTML='';var totalSettled=0;settledItems.forEach(function(item){settledHTML+='<div class="disb-item"><span class="disb-label">'+item.label+'</span><span class="disb-val">AED '+fmt(item.amount)+'</span></div>';totalSettled+=item.amount;});document.getElementById('ddSettledList').innerHTML=settledHTML;var adcbSettleAmts=getAdcbSettleAmounts();var adcbHTML='';var totalAdcbSettle=0;adcbSettleAmts.forEach(function(amt){adcbHTML+='<div class="disb-item"><span class="disb-label">ADCB Card Settlement</span><span class="disb-val">AED '+fmt(amt)+'</span></div>';totalAdcbSettle+=amt;});document.getElementById('ddAdcbSettleList').innerHTML=adcbHTML;var totalDed=pfAmt+totalSettled+totalAdcbSettle;document.getElementById('ddTotalDed').textContent='AED '+fmt(totalDed);document.getElementById('ddAmtReceive').textContent='AED '+fmt(loanAmt-totalDed);updateMessage();updateComparisonTable(); updateSettledLabel();}
+function updatePFDropdown(la){var sel=document.getElementById('pfDiscount');var base=calcPF(la);for(var i=0;i<sel.options.length;i++){var disc=parseInt(sel.options[i].value);var amt=base*(1-disc/100);sel.options[i].textContent=disc+'% (AED '+fmt(amt)+')';}}
+function updateCCSuggestion(gross,dbrPct,availLiab,ccLimit,newTotalLiab,allowedLiab){var box=document.getElementById('ccSuggest');if(gross<=0){box.classList.add('hidden');return;}if(dbrPct>dbrThreshold+0.001){var excess=newTotalLiab-allowedLiab;if(excess>0){var ccReduce=excess/0.05;var targetCC=Math.max(0,ccLimit-ccReduce);box.textContent='\u26a0 DBR exceeds '+dbrThreshold+'%. Reduce total CC limits to AED '+fmt(targetCC)+'.';box.className='cc-suggest warn';box.classList.remove('hidden');}}else if(availLiab>0){var optCC=availLiab/0.05;if(optCC>=3000){box.textContent='\u2713 Optimal CC limit: AED '+fmt(optCC);box.className='cc-suggest good';box.classList.remove('hidden');}else{box.classList.add('hidden');}}else{box.classList.add('hidden');}}
+function buildSpecialNotes(userNote){var notes='';if(userNote){userNote.split('\n').forEach(function(l){if(l.trim())notes+='\u2022 '+l.trim()+'\n';});}
+document.querySelectorAll('.loan-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));if(settledLoans.has(idx)){var bank=getBankName(e,'loan');var type=e.querySelector('.loan-type').value;var os=e.querySelector('.loan-os').value;notes+='\u2022 '+bank+' '+type+' outstanding AED '+fmt(pf(os))+' settled from loan proceeds\n';}});
+document.querySelectorAll('.card-entry').forEach(function(e){var idx=parseInt(e.getAttribute('data-idx'));var bank=getBankName(e,'card');if(bank==='ADCB'){var sa=e.querySelector('.cc-settle-amt');if(sa && pf(sa.value)>0){notes+='\u2022 '+bank+' Credit Card partial settlement AED '+fmt(pf(sa.value))+' from loan proceeds\n';}return;}if(settledCards.has(idx)){var os=settledCards.get(idx);var limit=pf(e.querySelector('.cc-limit').value);notes+='\u2022 '+bank+' Credit Card limit of AED '+fmt(limit)+' & settle AED '+fmt(os)+' from loan proceeds\n';}});
+document.querySelectorAll('.card-entry').forEach(function(e){var bank=getBankName(e,'card');var limit=e.querySelector('.cc-limit').value;var nl=e.querySelector('.cc-newlimit');if(bank==='X-Sell'){var lv=nl&&nl.style.display!=='none'?nl.value:limit;if(lv)notes+='\u2022 ADCB credit card will be issued with limit AED '+fmt(pf(lv))+'\n';}if(nl&&nl.style.display!=='none' && nl.value && pf(nl.value)!==pf(limit))notes+='\u2022 '+bank+' CC limit reduce from AED '+fmt(pf(limit))+' to AED '+fmt(pf(nl.value))+'\n';});
+if(notes)return'Special Note:\n'+notes;return'';}
+function updateSettledLabel(){var container=document.getElementById('settledSelectionContainer');if(!container)return;var settledItems=getSettledList();if(settledItems.length===0){container.innerHTML='';container.classList.add('hidden');return;}container.classList.remove('hidden');container.innerHTML='<i class="fas fa-check-circle mr-2"></i> Settled Liabilities';}
+function updateMessage(){var name=document.getElementById('custName').value.trim();var loanAmt=pf(document.getElementById('genLoanAmt').value);var rate=getEffRate();var baseRate=pf(document.getElementById('rate').value);var rateDisc=pf(document.getElementById('rateDiscount').value);var catBonus=getCatTenureBonus();var tenure=pi(document.getElementById('tenureInput').value);var emi=calcEMIWithGrace(loanAmt,rate,tenure);var flatRate=rate>0?rate/1.833:0;var maxElig=getMaxEligibilityByMultiplier();var totalPay=emi*tenure;var pfAmt=getDiscountedPF(loanAmt);var pfDisc=pi(document.getElementById('pfDiscount').value);var closureFee=pf(document.getElementById('closureFee').value);var totalOS=getTotalCCOS()+getTotalLoanOS();var cashInHand=loanAmt-totalOS-closureFee;if(document.getElementById('netAmtCb').checked)cashInHand-=pfAmt;cashInHand-=pf(document.getElementById('dCashOut').value);var sp=getStartPeriod();var userNote=document.getElementById('specialNote').value.trim();var effRateStr=rate.toFixed(2)+'%';var discBits=[];if(rateDisc>0)discBits.push(rateDisc.toFixed(2)+'% discount');if(catBonus>0)discBits.push(catBonus.toFixed(2)+'% tenure bonus');if(discBits.length>0)effRateStr+=' ('+discBits.join(', ')+')';var msg='';if(name)msg+='*Customer: '+name+'*\n\n';if(currentTab==='loan'){msg+='*Loan Details*\n';msg+='Loan Amount: AED '+fmt(loanAmt)+'\n';msg+='Monthly Installment: AED '+fmt(emi)+'\n';msg+='Tenure: '+tenure+' Months\n';msg+='Effective Rate: '+effRateStr+'\n';msg+='Flat Rate: '+flatRate.toFixed(2)+'%\n';msg+='Max Loan Eligibility: AED '+fmt(maxElig)+'\n';msg+='Start Period: up to '+sp+' Days\n';msg+='Total Payment: AED '+fmt(totalPay)+'\n';if(pfDisc>0)msg+='Processing Fees(+VAT) Discount ('+pfDisc+'%): AED '+fmt(pfAmt)+'\n';else msg+='Processing Fees(+VAT): AED '+fmt(pfAmt)+'\n';msg+='Insurance Fees: AED 0\n';if(closureFee>0)msg+='Closure Fee: AED '+fmt(closureFee)+'\n';msg+='Current Outstanding: AED '+fmt(totalOS)+'\n';msg+='Cash In Hand: AED '+fmt(cashInHand)+'\n';var allNotes=buildSpecialNotes(userNote);if(allNotes)msg+='\n'+allNotes;}else{var settledItems=getSettledList();var totalSettled=0;settledItems.forEach(function(it){totalSettled+=it.amount;});var adcbSettleAmts=getAdcbSettleAmounts();var totalAdcbSettle=0;adcbSettleAmts.forEach(function(amt){totalAdcbSettle+=amt;});var totalDed=pfAmt+totalSettled+totalAdcbSettle;var amtReceive=loanAmt-totalDed;var disbFPDText=document.getElementById('ddFPD').textContent;msg+='*Disbursal Details*\n';msg+='Loan Amount: AED '+fmt(loanAmt)+'\n';msg+='Tenure: '+tenure+' Months\n';msg+='Effective Rate: '+effRateStr+'\n';msg+='EMI: AED '+fmt(emi)+'\n';msg+='First Payment Date: '+disbFPDText+'\n\n';msg+='*FEES & DEDUCTIONS*\n';msg+='Processing Fees+VAT: AED '+fmt(pfAmt)+'\n';settledItems.forEach(function(it){msg+=it.label+': AED '+fmt(it.amount)+'\n';});adcbSettleAmts.forEach(function(amt){msg+='ADCB Card Settlement: AED '+fmt(amt)+'\n';});msg+='Total Deductions: AED '+fmt(totalDed)+'\n\n';msg+='*AMOUNT TO RECEIVE: AED '+fmt(amtReceive)+'*\n';}document.getElementById('msgBox').value=msg;}
 function sendWhatsApp(){var num=document.getElementById('waNum').value.replace(/\D/g,'');if(!num){showToast('Please enter a WhatsApp number');return;}window.open('https://wa.me/'+num+'?text='+encodeURIComponent(document.getElementById('msgBox').value),'_blank');}
 function copyMessage(){var txt=document.getElementById('msgBox').value;if(!txt){showToast('No message to copy');return;}navigator.clipboard.writeText(txt).then(function(){showToast('Message copied!');}).catch(function(){showToast('Copy failed');});}
-function pasteWA(){navigator.clipboard.readText().then(function(t){document.getElementById('waNum').value=t.replace(/\s/g,'').replace(/^(\+971|0)/,'');}).catch(function(){showToast('Clipboard access denied');});}
-
-// ---------------------- PROFILES (with auto‑save on close) ----------------------
-function saveProfile(){
-var name=document.getElementById('custName').value.trim();if(!name){showToast('Enter a customer name first');return;}
-profileStorage[name]={name:name,waNum:document.getElementById('waNum').value,salary:document.getElementById('salary').value,loanType:document.getElementById('loanType').value,
-aecbScore:document.getElementById('aecbScore').value,aecbNumericScore:document.getElementById('aecbNumericScore').value,
-adcbScore:document.getElementById('adcbScore').value,category:document.getElementById('category').value,rate:document.getElementById('rate').value,rateDiscount:document.getElementById('rateDiscount').value,pfDiscount:document.getElementById('pfDiscount').value,closureFee:document.getElementById('closureFee').value,genLoanAmt:document.getElementById('genLoanAmt').value,tenureInput:document.getElementById('tenureInput').value,dPrefEMI:document.getElementById('dPrefEMI').value,dCashOut:document.getElementById('dCashOut').value,netAmt:document.getElementById('netAmtCb').checked,specialNote:document.getElementById('specialNote').value,dbrThreshold:dbrThreshold,startPeriod:getStartPeriod(),instDate:getInstDate(),ddDisbDate:document.getElementById('ddDisbDate').value,addbackData:JSON.parse(JSON.stringify(addbackData)),
-loans:Array.from(document.querySelectorAll('.loan-entry')).map(function(e){return{bank:e.querySelector('.loan-bank').value,type:e.querySelector('.loan-type').value,inst:e.querySelector('.loan-inst').value,os:e.querySelector('.loan-os').value,settled:settledLoans.has(parseInt(e.getAttribute('data-idx')))};}),
-cards:Array.from(document.querySelectorAll('.card-entry')).map(function(e){var idx=parseInt(e.getAttribute('data-idx'));return{bank:e.querySelector('.cc-bank').value,limit:e.querySelector('.cc-limit').value,nl:e.querySelector('.cc-newlimit').value,os:e.querySelector('.cc-os').value,sa:e.querySelector('.cc-settle-amt').value,settled:settledCards.has(idx),origOS:origOSValues.get(idx)||e.querySelector('.cc-os').value};})};
-saveProfilesToStorage();
-loadProfileList();showToast('Profile saved: '+name);
-}
-function loadProfileList(){var sel=document.getElementById('savedProfiles');sel.innerHTML='<option value="">Select a profile</option>';Object.keys(profileStorage).forEach(function(n){var opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});}
-function retrieveProfile(){
-var sel=document.getElementById('savedProfiles').value;if(!sel||!profileStorage[sel]){showToast('Select a profile first');return;}
-var p=profileStorage[sel];resetAll(true);
-document.getElementById('custName').value=p.name||'';document.getElementById('waNum').value=p.waNum||'';document.getElementById('salary').value=p.salary||'';document.getElementById('loanType').value=p.loanType||'Fresh';onLoanTypeChange();
-document.getElementById('aecbScore').value=p.aecbScore||'NH';
-if(p.aecbScore==='ENTER'){document.getElementById('aecbScoreInput').classList.remove('hidden');document.getElementById('aecbNumericScore').value=p.aecbNumericScore||'';onAecbNumericInput(document.getElementById('aecbNumericScore'));}
-document.getElementById('adcbScore').value=p.adcbScore||'LR';document.getElementById('category').value=p.category||'CAT A-B';document.getElementById('rate').value=p.rate||'';document.getElementById('rateDiscount').value=p.rateDiscount||'0';document.getElementById('pfDiscount').value=p.pfDiscount||'0';document.getElementById('closureFee').value=p.closureFee||'';document.getElementById('genLoanAmt').value=p.genLoanAmt||'';document.getElementById('tenureInput').value=p.tenureInput||'48';document.getElementById('dPrefEMI').value=p.dPrefEMI||'';document.getElementById('dCashOut').value=p.dCashOut||'';document.getElementById('netAmtCb').checked=p.netAmt!==false;document.getElementById('specialNote').value=p.specialNote||'';document.getElementById('ddDisbDate').value=p.ddDisbDate||'';
-if(p.dbrThreshold===49.99){dbrThreshold=49.99;document.getElementById('dbrThreshLabel').textContent='49.99%';document.getElementById('dbrThreshLabel').className='dbr-thresh t4999';}else{dbrThreshold=49;document.getElementById('dbrThreshLabel').textContent='49%';document.getElementById('dbrThreshLabel').className='dbr-thresh t49';}
-setTimeout(function(){
-var spR=document.querySelector('input[name="startP"][value="'+(p.startPeriod||'31-60')+'"]');if(spR)spR.checked=true;
-var idR=document.getElementById('inst'+(p.instDate||5));if(idR)idR.checked=true;
-document.querySelectorAll('.tenor-radio').forEach(function(r){r.checked=r.value===(p.tenureInput||'48');});
-if(p.loans)p.loans.forEach(function(l){addLoan();var entries=document.querySelectorAll('.loan-entry');var e=entries[entries.length-1];e.querySelector('.loan-bank').value=l.bank||'';e.querySelector('.loan-type').value=l.type||'Personal Loan';e.querySelector('.loan-inst').value=l.inst||'';e.querySelector('.loan-os').value=l.os||'';if(l.settled){var idx2=parseInt(e.getAttribute('data-idx'));settledLoans.add(idx2);e.classList.add('settled');var btn=e.querySelector('.settle-btn');btn.textContent='Unsettle';btn.classList.add('unsettled');}});
-if(p.cards)p.cards.forEach(function(c){addCard();var entries=document.querySelectorAll('.card-entry');var e=entries[entries.length-1];e.querySelector('.cc-bank').value=c.bank||'';e.querySelector('.cc-limit').value=c.limit||'';e.querySelector('.cc-newlimit').value=c.nl||'';e.querySelector('.cc-os').value=c.os||'';if(c.bank==='ADCB'){e.querySelector('.cc-settle-amt').classList.remove('hidden');e.querySelector('.cc-settle-amt').value=c.sa||'';}if(c.origOS){var ci=parseInt(e.getAttribute('data-idx'));origOSValues.set(ci,parseFloat(c.origOS));}if(c.settled && c.bank!=='ADCB'){var ci2=parseInt(e.getAttribute('data-idx'));settledCards.set(ci2,parseFloat(c.origOS||c.os));e.classList.add('settled');var btn2=e.querySelector('.settle-btn');btn2.textContent='Unsettle';btn2.classList.add('unsettled');}});
-if(p.addbackData){addbackData={};Object.keys(p.addbackData).forEach(function(k){var ab=p.addbackData[k];if(!ab||!ab.type)return;addAddbackEntry();var entries=document.querySelectorAll('[data-ab-idx]');var lastE=entries[entries.length-1];lastE.querySelector('select').value=ab.type;onAbTypeChange(lastE.querySelector('select'),parseInt(lastE.getAttribute('data-ab-idx')));setTimeout(function(){var fi=parseInt(lastE.getAttribute('data-ab-idx'));addbackData[fi]=JSON.parse(JSON.stringify(ab));var box=document.getElementById('abFields'+fi);if(!box)return;if(ab.type==='hra'||ab.type==='airfare'){var vs=ab.values||{};if(vs.period){var r2=box.querySelector('input[value="'+vs.period+'"]');if(r2)r2.checked=true;}if(vs.amount){var inp2=box.querySelector('input[type="number"]');if(inp2)inp2.value=vs.amount;}}else{for(var mi=1;mi<=6;mi++){if(ab.values&&ab.values['m'+mi]){var inps=box.querySelectorAll('input[type="number"]');if(inps[mi-1])inps[mi-1].value=ab.values['m'+mi];}}}recalcAll();},50);});}
-if(p.ddDisbDate)calcDisbFPD();
-updateAutoMultiples();
-updateDBRMax();
-autoSetLoan();
-recalcAll();
-},100);
-showToast('Profile loaded: '+p.name);
-}
-function deleteProfile(){var sel=document.getElementById('savedProfiles').value;if(!sel){showToast('Select a profile first');return;}showConfirm('Delete profile "'+sel+'"?',function(yes){if(yes){delete profileStorage[sel];saveProfilesToStorage();loadProfileList();showToast('Profile deleted');}});}
-
-function autoSaveWaNum(){
-    var name=document.getElementById('custName').value.trim();
-    if(name && profileStorage[name]){
-        profileStorage[name].waNum = document.getElementById('waNum').value;
-        saveProfilesToStorage();
-    }
-}
-
-function closeLiabilitiesModal(){
-    var name=document.getElementById('custName').value.trim();
-    if(name && profileStorage[name]){
-        profileStorage[name].loans = Array.from(document.querySelectorAll('.loan-entry')).map(function(e){return{bank:e.querySelector('.loan-bank').value,type:e.querySelector('.loan-type').value,inst:e.querySelector('.loan-inst').value,os:e.querySelector('.loan-os').value,settled:settledLoans.has(parseInt(e.getAttribute('data-idx')))};});
-        profileStorage[name].cards = Array.from(document.querySelectorAll('.card-entry')).map(function(e){var idx=parseInt(e.getAttribute('data-idx'));return{bank:e.querySelector('.cc-bank').value,limit:e.querySelector('.cc-limit').value,nl:e.querySelector('.cc-newlimit').value,os:e.querySelector('.cc-os').value,sa:e.querySelector('.cc-settle-amt').value,settled:settledCards.has(idx),origOS:origOSValues.get(idx)||e.querySelector('.cc-os').value};});
-        saveProfilesToStorage();
-    }
-    document.getElementById('liabilitiesModal').classList.remove('open');
-}
-
-function resetAll(silent){
-document.getElementById('custName').value='';document.getElementById('waNum').value='';document.getElementById('salary').value='';document.getElementById('loanType').value='Fresh';
-document.getElementById('aecbScore').value='NH';document.getElementById('aecbScoreInput').classList.add('hidden');document.getElementById('aecbNumericScore').value='';document.getElementById('aecbScoreBadge').style.display='none';
-document.getElementById('adcbScore').value='LR';document.getElementById('category').value='CAT A-B';document.getElementById('rate').value='';document.getElementById('rate').placeholder='Auto / Manual';document.getElementById('rateDiscount').value='0';document.getElementById('pfDiscount').value='0';document.getElementById('closureFee').value='';document.getElementById('closureFeeRow').classList.add('hidden');document.getElementById('genLoanAmt').value='';document.getElementById('tenureInput').value='48';document.getElementById('dPrefEMI').value='';document.getElementById('dCashOut').value='';document.getElementById('netAmtCb').checked=true;document.getElementById('specialNote').value='';document.getElementById('savedProfiles').value='';document.getElementById('ddDisbDate').value='';document.getElementById('ddFPD').textContent='-';
-dbrThreshold=49;document.getElementById('dbrThreshLabel').textContent='49%';document.getElementById('dbrThreshLabel').className='dbr-thresh t49';
-settledCards.clear();settledLoans.clear();origOSValues.clear();cardCount=0;loanCount=0;
-document.getElementById('loansContainer').innerHTML='';document.getElementById('cardsContainer').innerHTML='';document.getElementById('rmLoanBtn').disabled=true;document.getElementById('rmCardBtn').disabled=true;
-addbackData={};addbackCount=0;document.getElementById('addbackList').innerHTML='';document.getElementById('rmAbBtn').disabled=true;
-document.getElementById('inst5').checked=true;
-document.querySelectorAll('.tenor-radio').forEach(function(r){r.checked=r.value==='48';});
-buildStartPeriod();
-updateAutoMultiples();
-updateDBRMax();
-autoSetLoan();
-recalcAll();if(!silent)showToast('All fields reset');
-}
-
-// ---------------------- LOAN COMPARISON (editable rate per row) ----------------------
+function pasteWA(){navigator.clipboard.readText().then(function(t){document.getElementById('waNum').value=t.replace(/\s/g,'');formatWaNumber(document.getElementById('waNum'));}).catch(function(){showToast('Clipboard access denied');});}
+function formatWaNumber(input){var val=input.value.replace(/\s/g,'');var digits=val.replace(/\D/g,'');if(digits.length===9 && digits.startsWith('5')){val='+971'+digits;}input.value=val;}
+function saveProfile(){var name=document.getElementById('custName').value.trim();if(!name){showToast('Enter a customer name first');return;}profileStorage[name]={name:name,waNum:document.getElementById('waNum').value,salary:document.getElementById('salary').value,loanType:document.getElementById('loanType').value,aecbScore:document.getElementById('aecbScore').value,aecbNumericScore:document.getElementById('aecbNumericScore').value,adcbScore:document.getElementById('adcbScore').value,adcbNumericScore:document.getElementById('adcbNumericScore').value,category:document.getElementById('category').value,rate:document.getElementById('rate').value,rateDiscount:document.getElementById('rateDiscount').value,pfDiscount:document.getElementById('pfDiscount').value,closureFee:document.getElementById('closureFee').value,genLoanAmt:document.getElementById('genLoanAmt').value,tenureInput:document.getElementById('tenureInput').value,dPrefEMI:document.getElementById('dPrefEMI').value,dCashOut:document.getElementById('dCashOut').value,netAmt:document.getElementById('netAmtCb').checked,specialNote:document.getElementById('specialNote').value,dbrThreshold:dbrThreshold,startPeriod:getStartPeriod(),instDate:getInstDate(),ddDisbDate:document.getElementById('ddDisbDate').value,addbackData:JSON.parse(JSON.stringify(addbackData)),loans:Array.from(document.querySelectorAll('.loan-entry')).map(function(e){return{bank:getBankName(e,'loan'),type:e.querySelector('.loan-type').value,inst:e.querySelector('.loan-inst').value,os:e.querySelector('.loan-os').value,settled:settledLoans.has(parseInt(e.getAttribute('data-idx')))};}),cards:Array.from(document.querySelectorAll('.card-entry')).map(function(e){var idx=parseInt(e.getAttribute('data-idx'));return{bank:getBankName(e,'card'),limit:e.querySelector('.cc-limit').value,nl:e.querySelector('.cc-newlimit').value,os:e.querySelector('.cc-os').value,sa:e.querySelector('.cc-settle-amt').value,settled:settledCards.has(idx),origOS:origOSValues.get(idx)||e.querySelector('.cc-os').value};})};saveProfilesToStorage();loadProfileList();syncProfileCompact();showToast('Profile saved: '+name);}
+function loadProfileList(){var sel=document.getElementById('savedProfiles');sel.innerHTML='<option value="">Select a profile</option>';Object.keys(profileStorage).forEach(function(n){var opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});var selCompact=document.getElementById('savedProfilesCompact');if(selCompact){selCompact.innerHTML=sel.innerHTML;}}
+function syncProfileCompact(){var name=document.getElementById('custName').value;var selCompact=document.getElementById('savedProfilesCompact');if(selCompact){selCompact.value=name;}var nameCompact=document.getElementById('custNameCompact');if(nameCompact) nameCompact.value=name;}
+function retrieveProfile(){var sel=document.getElementById('savedProfiles').value;if(!sel||!profileStorage[sel]){showToast('Select a profile first');return;}var p=profileStorage[sel];resetAll(true);document.getElementById('custName').value=p.name||'';document.getElementById('waNum').value=p.waNum||'';document.getElementById('salary').value=p.salary||'';document.getElementById('loanType').value=p.loanType||'Fresh';onLoanTypeChange();document.getElementById('aecbScore').value=p.aecbScore||'NH';if(p.aecbScore==='ENTER'){document.getElementById('aecbScoreInput').classList.remove('hidden');document.getElementById('aecbNumericScore').value=p.aecbNumericScore||'';onAecbNumericInput(document.getElementById('aecbNumericScore'));}document.getElementById('adcbScore').value=p.adcbScore||'LR';if(p.adcbScore==='ENTER'){document.getElementById('adcbScoreInput').classList.remove('hidden');document.getElementById('adcbNumericScore').value=p.adcbNumericScore||'';onAdcbNumericInput(document.getElementById('adcbNumericScore'));}document.getElementById('category').value=p.category||'CAT A-B';document.getElementById('rate').value=p.rate||'';document.getElementById('rateDiscount').value=p.rateDiscount||'0';document.getElementById('pfDiscount').value=p.pfDiscount||'0';document.getElementById('closureFee').value=p.closureFee||'';document.getElementById('genLoanAmt').value=p.genLoanAmt||'';document.getElementById('tenureInput').value=p.tenureInput||'48';document.getElementById('dPrefEMI').value=p.dPrefEMI||'';document.getElementById('dCashOut').value=p.dCashOut||'';document.getElementById('netAmtCb').checked=p.netAmt!==false;document.getElementById('specialNote').value=p.specialNote||'';document.getElementById('ddDisbDate').value=p.ddDisbDate||'';if(p.dbrThreshold===49.99){dbrThreshold=49.99;document.getElementById('dbrThreshLabel').textContent='49.99%';document.getElementById('dbrThreshLabel').className='dbr-thresh t4999';}else{dbrThreshold=49;document.getElementById('dbrThreshLabel').textContent='49%';document.getElementById('dbrThreshLabel').className='dbr-thresh t49';}setTimeout(function(){var spR=document.querySelector('input[name="startP"][value="'+(p.startPeriod||'31-60')+'"]');if(spR)spR.checked=true;var idR=document.getElementById('inst'+(p.instDate||5));if(idR)idR.checked=true;document.querySelectorAll('.tenor-radio').forEach(function(r){r.checked=r.value===(p.tenureInput||'48');});if(p.loans)p.loans.forEach(function(l){addLoan();var entries=document.querySelectorAll('.loan-entry');var e=entries[entries.length-1];var bankSel=e.querySelector('.loan-bank');if(!BANKS.includes(l.bank) && l.bank && l.bank!==''){bankSel.parentNode.replaceChild(createBankInput(l.bank),bankSel);}else bankSel.value=l.bank||'';e.querySelector('.loan-type').value=l.type||'Personal Loan';e.querySelector('.loan-inst').value=l.inst||'';e.querySelector('.loan-os').value=l.os||'';if(l.settled){var idx2=parseInt(e.getAttribute('data-idx'));settledLoans.add(idx2);e.classList.add('settled');var btn=e.querySelector('.settle-btn');btn.textContent='Unsettle';btn.classList.add('unsettled');}});if(p.cards)p.cards.forEach(function(c){addCard();var entries=document.querySelectorAll('.card-entry');var e=entries[entries.length-1];var bankSel=e.querySelector('.cc-bank');if(!BANKS.includes(c.bank) && c.bank && c.bank!==''){bankSel.parentNode.replaceChild(createBankInput(c.bank),bankSel);}else bankSel.value=c.bank||'';e.querySelector('.cc-limit').value=c.limit||'';e.querySelector('.cc-newlimit').value=c.nl||'';e.querySelector('.cc-os').value=c.os||'';if(c.bank==='ADCB'){e.querySelector('.cc-settle-amt').classList.remove('hidden');e.querySelector('.cc-settle-amt').value=c.sa||'';}if(c.bank==='X-Sell'){var newLim=e.querySelector('.cc-newlimit');var osInp=e.querySelector('.cc-os');var settleBtn=e.querySelector('.settle-btn');if(newLim)newLim.style.display='none';if(osInp)osInp.style.display='none';if(settleBtn)settleBtn.style.display='none';}if(c.origOS){var ci=parseInt(e.getAttribute('data-idx'));origOSValues.set(ci,parseFloat(c.origOS));}if(c.settled && c.bank!=='ADCB'){var ci2=parseInt(e.getAttribute('data-idx'));settledCards.set(ci2,parseFloat(c.origOS||c.os));e.classList.add('settled');var btn2=e.querySelector('.settle-btn');btn2.textContent='Unsettle';btn2.classList.add('unsettled');}});if(p.addbackData){addbackData={};Object.keys(p.addbackData).forEach(function(k){var ab=p.addbackData[k];if(!ab||!ab.type)return;addAddbackEntry();var entries=document.querySelectorAll('[data-ab-idx]');var lastE=entries[entries.length-1];lastE.querySelector('select').value=ab.type;onAbTypeChange(lastE.querySelector('select'),parseInt(lastE.getAttribute('data-ab-idx')));setTimeout(function(){var fi=parseInt(lastE.getAttribute('data-ab-idx'));addbackData[fi]=JSON.parse(JSON.stringify(ab));var box=document.getElementById('abFields'+fi);if(!box)return;if(ab.type==='hra'||ab.type==='airfare'){var vs=ab.values||{};if(vs.period){var r2=box.querySelector('input[value="'+vs.period+'"]');if(r2)r2.checked=true;}if(vs.amount){var inp2=box.querySelector('input[type="number"]');if(inp2)inp2.value=vs.amount;}}else{for(var mi=1;mi<=6;mi++){if(ab.values&&ab.values['m'+mi]){var inps=box.querySelectorAll('input[type="number"]');if(inps[mi-1])inps[mi-1].value=ab.values['m'+mi];}}}recalcAll();},50);});}if(p.ddDisbDate)calcDisbFPD();updateAutoMultiples();updateDBRMax();autoSetLoan();recalcAll();},100);showToast('Profile loaded: '+p.name);syncProfileCompact();}
+function createBankInput(value){var input=document.createElement('input');input.type='text';input.className='entry-input';input.style.flex='1';input.style.minWidth='70px';input.value=value;input.placeholder='Enter bank name';input.oninput=function(){recalcAll();};return input;}
+function deleteProfile(){var sel=document.getElementById('savedProfiles').value;if(!sel){showToast('Select a profile first');return;}showConfirm('Delete profile "'+sel+'"?',function(yes){if(yes){delete profileStorage[sel];saveProfilesToStorage();loadProfileList();showToast('Profile deleted');syncProfileCompact();}});}
+function autoSaveWaNum(){var name=document.getElementById('custName').value.trim();if(name && profileStorage[name]){profileStorage[name].waNum = document.getElementById('waNum').value;saveProfilesToStorage();}}
+function closeLiabilitiesModal(){var name=document.getElementById('custName').value.trim();if(name && profileStorage[name]){profileStorage[name].loans = Array.from(document.querySelectorAll('.loan-entry')).map(function(e){return{bank:getBankName(e,'loan'),type:e.querySelector('.loan-type').value,inst:e.querySelector('.loan-inst').value,os:e.querySelector('.loan-os').value,settled:settledLoans.has(parseInt(e.getAttribute('data-idx')))};});profileStorage[name].cards = Array.from(document.querySelectorAll('.card-entry')).map(function(e){var idx=parseInt(e.getAttribute('data-idx'));return{bank:getBankName(e,'card'),limit:e.querySelector('.cc-limit').value,nl:e.querySelector('.cc-newlimit').value,os:e.querySelector('.cc-os').value,sa:e.querySelector('.cc-settle-amt').value,settled:settledCards.has(idx),origOS:origOSValues.get(idx)||e.querySelector('.cc-os').value};});saveProfilesToStorage();}document.getElementById('liabilitiesModal').classList.remove('open');}
+function resetAll(silent){document.getElementById('custName').value='';document.getElementById('waNum').value='';document.getElementById('salary').value='';document.getElementById('loanType').value='Fresh';document.getElementById('aecbScore').value='NH';document.getElementById('aecbScoreInput').classList.add('hidden');document.getElementById('aecbNumericScore').value='';document.getElementById('aecbScoreBadge').style.display='none';document.getElementById('adcbScore').value='LR';document.getElementById('adcbScoreInput').classList.add('hidden');document.getElementById('adcbNumericScore').value='';document.getElementById('adcbScoreBadge').style.display='none';document.getElementById('category').value='CAT A-B';document.getElementById('rate').value='';document.getElementById('rate').placeholder='Auto / Manual';document.getElementById('rateDiscount').value='0';document.getElementById('pfDiscount').value='0';document.getElementById('closureFee').value='';document.getElementById('closureFeeRow').classList.add('hidden');document.getElementById('genLoanAmt').value='';document.getElementById('tenureInput').value='48';document.getElementById('dPrefEMI').value='';document.getElementById('dCashOut').value='';document.getElementById('netAmtCb').checked=true;document.getElementById('specialNote').value='';document.getElementById('savedProfiles').value='';document.getElementById('ddDisbDate').value='';document.getElementById('ddFPD').textContent='-';dbrThreshold=49;document.getElementById('dbrThreshLabel').textContent='49%';document.getElementById('dbrThreshLabel').className='dbr-thresh t49';settledCards.clear();settledLoans.clear();origOSValues.clear();cardCount=0;loanCount=0;document.getElementById('loansContainer').innerHTML='';document.getElementById('cardsContainer').innerHTML='';document.getElementById('rmLoanBtn').disabled=true;document.getElementById('rmCardBtn').disabled=true;addbackData={};addbackCount=0;document.getElementById('addbackList').innerHTML='';document.getElementById('rmAbBtn').disabled=true;document.getElementById('inst5').checked=true;document.querySelectorAll('.tenor-radio').forEach(function(r){r.checked=r.value==='48';});buildStartPeriod();updateAutoMultiples();updateDBRMax();autoSetLoan();recalcAll();if(!silent)showToast('All fields reset');syncProfileCompact();}
+function saveProfileCompact(){var compactName=document.getElementById('custNameCompact').value.trim();if(compactName){document.getElementById('custName').value=compactName;saveProfile();}}
+function retrieveProfileCompact(){var compactSel=document.getElementById('savedProfilesCompact').value;if(compactSel){document.getElementById('savedProfiles').value=compactSel;retrieveProfile();}}
+function deleteProfileCompact(){var compactSel=document.getElementById('savedProfilesCompact').value;if(compactSel){document.getElementById('savedProfiles').value=compactSel;deleteProfile();}}
 var comparisonTenors = [48,36,24,12];
-function updateComparisonTable(){
-    var baseLoan = pf(document.getElementById('genLoanAmt').value);
-    var baseRate = getEffRate();
-    var baseTenure = pi(document.getElementById('tenureInput').value);
-    var baseTotalInterest = 0;
-    if(baseLoan>0 && baseRate>0 && baseTenure>0){
-        var baseEMI = calcEMIWithGrace(baseLoan, baseRate, baseTenure);
-        baseTotalInterest = baseEMI * baseTenure - baseLoan;
-    }
-    var tbody = document.getElementById('comparisonTbody');
-    tbody.innerHTML = '';
-    comparisonTenors.forEach(function(tenor, idx){
-        var loanAmt = baseLoan;
-        var rate = baseRate;
-        var emi = calcEMIWithGrace(loanAmt, rate, tenor);
-        var totalInterest = emi * tenor - loanAmt;
-        var savings = totalInterest - baseTotalInterest;
-        var cashInHand = loanAmt - getTotalCCOS() - getTotalLoanOS() - pf(document.getElementById('closureFee').value);
-        if(document.getElementById('netAmtCb').checked) cashInHand -= getDiscountedPF(loanAmt);
-        cashInHand -= pf(document.getElementById('dCashOut').value);
-        var row = tbody.insertRow();
-        row.insertCell(0).innerHTML = '<span class="font-bold">'+tenor+'</span> <button class="btn-remove-tenor" onclick="removeComparisonTenor('+idx+')"><i class="fas fa-trash"></i></button>';
-        var cellLoan = row.insertCell(1);
-        var loanInput = document.createElement('input');
-        loanInput.type = 'text';
-        loanInput.value = fmtInt(loanAmt);
-        loanInput.style.width='100px';
-        loanInput.oninput = (function(tn, r, baseInt, baseTen) {
-            return function(e){
-                var newLoan = pf(e.target.value);
-                var newEmi = calcEMIWithGrace(newLoan, r, tn);
-                var newTotalInt = newEmi * tn - newLoan;
-                var newSavings = newTotalInt - baseInt;
-                var newCash = newLoan - getTotalCCOS() - getTotalLoanOS() - pf(document.getElementById('closureFee').value);
-                if(document.getElementById('netAmtCb').checked) newCash -= getDiscountedPF(newLoan);
-                newCash -= pf(document.getElementById('dCashOut').value);
-                row.cells[2].innerHTML = '<input type="text" value="'+fmt(r)+'" style="width:80px" oninput="updateComparisonRowRate(this, '+tn+', '+idx+')">';
-                row.cells[3].innerHTML = fmt(newEmi);
-                row.cells[4].innerHTML = fmt(newTotalInt);
-                row.cells[5].innerHTML = newSavings>=0 ? '<span class="savings-negative">+'+fmt(newSavings)+'</span>' : '<span class="savings-positive">-'+fmt(-newSavings)+'</span>';
-                row.cells[6].innerHTML = fmt(newCash);
-            };
-        })(tenor, rate, baseTotalInterest, baseTenure);
-        cellLoan.appendChild(loanInput);
-        var rateCell = row.insertCell(2);
-        var rateInput = document.createElement('input');
-        rateInput.type = 'text';
-        rateInput.value = fmt(rate);
-        rateInput.style.width='80px';
-        rateInput.oninput = (function(tn, ln, baseInt, baseTen) {
-            return function(e){
-                var newRate = pf(e.target.value);
-                var newEmi = calcEMIWithGrace(ln, newRate, tn);
-                var newTotalInt = newEmi * tn - ln;
-                var newSavings = newTotalInt - baseInt;
-                var newCash = ln - getTotalCCOS() - getTotalLoanOS() - pf(document.getElementById('closureFee').value);
-                if(document.getElementById('netAmtCb').checked) newCash -= getDiscountedPF(ln);
-                newCash -= pf(document.getElementById('dCashOut').value);
-                row.cells[3].innerHTML = fmt(newEmi);
-                row.cells[4].innerHTML = fmt(newTotalInt);
-                row.cells[5].innerHTML = newSavings>=0 ? '<span class="savings-negative">+'+fmt(newSavings)+'</span>' : '<span class="savings-positive">-'+fmt(-newSavings)+'</span>';
-                row.cells[6].innerHTML = fmt(newCash);
-            };
-        })(tenor, loanAmt, baseTotalInterest, baseTenure);
-        rateCell.appendChild(rateInput);
-        row.insertCell(3).innerHTML = fmt(emi);
-        row.insertCell(4).innerHTML = fmt(totalInterest);
-        row.insertCell(5).innerHTML = savings>=0 ? '<span class="savings-negative">+'+fmt(savings)+'</span>' : '<span class="savings-positive">-'+fmt(-savings)+'</span>';
-        row.insertCell(6).innerHTML = fmt(cashInHand);
-    });
-}
-function updateComparisonRowRate(inputEl, tenor, rowIdx){
-    var newRate = pf(inputEl.value);
-    var row = inputEl.closest('tr');
-    var loanCell = row.cells[1];
-    var loanInput = loanCell.querySelector('input');
-    var loanAmt = pf(loanInput.value);
-    var baseLoan = pf(document.getElementById('genLoanAmt').value);
-    var baseRate = getEffRate();
-    var baseTenure = pi(document.getElementById('tenureInput').value);
-    var baseTotalInterest = 0;
-    if(baseLoan>0 && baseRate>0 && baseTenure>0){
-        var baseEMI = calcEMIWithGrace(baseLoan, baseRate, baseTenure);
-        baseTotalInterest = baseEMI * baseTenure - baseLoan;
-    }
-    var newEmi = calcEMIWithGrace(loanAmt, newRate, tenor);
-    var newTotalInt = newEmi * tenor - loanAmt;
-    var newSavings = newTotalInt - baseTotalInterest;
-    var newCash = loanAmt - getTotalCCOS() - getTotalLoanOS() - pf(document.getElementById('closureFee').value);
-    if(document.getElementById('netAmtCb').checked) newCash -= getDiscountedPF(loanAmt);
-    newCash -= pf(document.getElementById('dCashOut').value);
-    row.cells[3].innerHTML = fmt(newEmi);
-    row.cells[4].innerHTML = fmt(newTotalInt);
-    row.cells[5].innerHTML = newSavings>=0 ? '<span class="savings-negative">+'+fmt(newSavings)+'</span>' : '<span class="savings-positive">-'+fmt(-newSavings)+'</span>';
-    row.cells[6].innerHTML = fmt(newCash);
-}
-function addComparisonTenor(){
-    var newTenor = prompt('Enter new tenure (months):', '60');
-    if(newTenor && !isNaN(newTenor) && newTenor>0){
-        comparisonTenors.push(parseInt(newTenor));
-        updateComparisonTable();
-    }
-}
-function removeComparisonTenor(idx){
-    if(comparisonTenors.length>1){
-        comparisonTenors.splice(idx,1);
-        updateComparisonTable();
-    } else {
-        showToast('At least one tenor required');
-    }
-}
-
-// ---------------------- INIT ----------------------
-function loadProfilesFromStorage() {
-    var stored = localStorage.getItem('adcb_profiles');
-    if (stored) {
-        try {
-            profileStorage = JSON.parse(stored);
-        } catch(e) {
-            console.error('Failed to parse profiles:', e);
-            profileStorage = {};
-        }
-    } else {
-        profileStorage = {};
-    }
-    loadProfileList();
-}
-function saveProfilesToStorage() {
-    localStorage.setItem('adcb_profiles', JSON.stringify(profileStorage));
-}
-
+function updateComparisonTable(){var baseLoan = pf(document.getElementById('genLoanAmt').value);var baseRate = getEffRate();var baseTenure = pi(document.getElementById('tenureInput').value);var baseTotalInterest = 0;if(baseLoan>0 && baseRate>0 && baseTenure>0){var baseEMI = calcEMIWithGrace(baseLoan, baseRate, baseTenure);baseTotalInterest = baseEMI * baseTenure - baseLoan;}var tbody = document.getElementById('comparisonTbody');tbody.innerHTML = '';comparisonTenors.forEach(function(tenor, idx){var maxLoanForTenor = getDBRMaxLoanForTenure(tenor);var loanAmt = maxLoanForTenor;var rate = baseRate;var emi = calcEMIWithGrace(loanAmt, rate, tenor);var totalInterest = emi * tenor - loanAmt;var savings = totalInterest - baseTotalInterest;var cashInHand = loanAmt - getTotalCCOS() - getTotalLoanOS() - pf(document.getElementById('closureFee').value);if(document.getElementById('netAmtCb').checked) cashInHand -= getDiscountedPF(loanAmt);cashInHand -= pf(document.getElementById('dCashOut').value);var row = tbody.insertRow();row.insertCell(0).innerHTML = '<span class="font-bold">'+tenor+'</span>';var cellLoan = row.insertCell(1);var loanInput = document.createElement('input');loanInput.type = 'text';loanInput.value = fmtInt(loanAmt);loanInput.style.width='100px';loanInput.oninput = (function(tn, r, baseInt, baseTen){return function(e){var newLoan = pf(e.target.value);var newEmi = calcEMIWithGrace(newLoan, r, tn);var newTotalInt = newEmi * tn - newLoan;var newSavings = newTotalInt - baseInt;var newCash = newLoan - getTotalCCOS() - getTotalLoanOS() - pf(document.getElementById('closureFee').value);if(document.getElementById('netAmtCb').checked) newCash -= getDiscountedPF(newLoan);newCash -= pf(document.getElementById('dCashOut').value);row.cells[2].innerHTML = '<input type="text" value="'+fmt(r)+'" style="width:80px" oninput="updateComparisonRowRate(this, '+tn+', '+idx+')">';row.cells[3].innerHTML = fmt(newEmi);row.cells[4].innerHTML = fmt(newTotalInt);row.cells[5].innerHTML = newSavings>=0 ? '<span class="savings-negative">+'+fmt(newSavings)+'</span>' : '<span class="savings-positive">-'+fmt(-newSavings)+'</span>';row.cells[6].innerHTML = fmt(newCash);};})(tenor, rate, baseTotalInterest, baseTenure);cellLoan.appendChild(loanInput);var rateCell = row.insertCell(2);var rateInput = document.createElement('input');rateInput.type = 'text';rateInput.value = fmt(rate);rateInput.style.width='80px';rateInput.oninput = (function(tn, ln, baseInt, baseTen){return function(e){var newRate = pf(e.target.value);var newEmi = calcEMIWithGrace(ln, newRate, tn);var newTotalInt = newEmi * tn - ln;var newSavings = newTotalInt - baseInt;var newCash = ln - getTotalCCOS() - getTotalLoanOS() - pf(document.getElementById('closureFee').value);if(document.getElementById('netAmtCb').checked) newCash -= getDiscountedPF(ln);newCash -= pf(document.getElementById('dCashOut').value);row.cells[3].innerHTML = fmt(newEmi);row.cells[4].innerHTML = fmt(newTotalInt);row.cells[5].innerHTML = newSavings>=0 ? '<span class="savings-negative">+'+fmt(newSavings)+'</span>' : '<span class="savings-positive">-'+fmt(-newSavings)+'</span>';row.cells[6].innerHTML = fmt(newCash);};})(tenor, loanAmt, baseTotalInterest, baseTenure);rateCell.appendChild(rateInput);row.insertCell(3).innerHTML = fmt(emi);row.insertCell(4).innerHTML = fmt(totalInterest);row.insertCell(5).innerHTML = savings>=0 ? '<span class="savings-negative">+'+fmt(savings)+'</span>' : '<span class="savings-positive">-'+fmt(-savings)+'</span>';row.insertCell(6).innerHTML = fmt(cashInHand);});}
+function updateComparisonRowRate(inputEl, tenor, rowIdx){var newRate = pf(inputEl.value);var row = inputEl.closest('tr');var loanCell = row.cells[1];var loanInput = loanCell.querySelector('input');var loanAmt = pf(loanInput.value);var baseLoan = pf(document.getElementById('genLoanAmt').value);var baseRate = getEffRate();var baseTenure = pi(document.getElementById('tenureInput').value);var baseTotalInterest = 0;if(baseLoan>0 && baseRate>0 && baseTenure>0){var baseEMI = calcEMIWithGrace(baseLoan, baseRate, baseTenure);baseTotalInterest = baseEMI * baseTenure - baseLoan;}var newEmi = calcEMIWithGrace(loanAmt, newRate, tenor);var newTotalInt = newEmi * tenor - loanAmt;var newSavings = newTotalInt - baseTotalInterest;var newCash = loanAmt - getTotalCCOS() - getTotalLoanOS() - pf(document.getElementById('closureFee').value);if(document.getElementById('netAmtCb').checked) newCash -= getDiscountedPF(loanAmt);newCash -= pf(document.getElementById('dCashOut').value);row.cells[3].innerHTML = fmt(newEmi);row.cells[4].innerHTML = fmt(newTotalInt);row.cells[5].innerHTML = newSavings>=0 ? '<span class="savings-negative">+'+fmt(newSavings)+'</span>' : '<span class="savings-positive">-'+fmt(-newSavings)+'</span>';row.cells[6].innerHTML = fmt(newCash);}
+function addComparisonTenor(){var newTenor = prompt('Enter new tenure (months):', '60');if(newTenor && !isNaN(newTenor) && newTenor>0){comparisonTenors.push(parseInt(newTenor));updateComparisonTable();}}
+function removeLastComparisonTenor(){if(comparisonTenors.length>1){comparisonTenors.pop();updateComparisonTable();} else {showToast('At least one tenor required');}}
+function loadProfilesFromStorage(){var stored = localStorage.getItem('adcb_profiles');if(stored){try{profileStorage = JSON.parse(stored);}catch(e){console.error('Failed to parse profiles:', e);profileStorage = {};}}else{profileStorage = {};}loadProfileList();}
+function saveProfilesToStorage(){localStorage.setItem('adcb_profiles', JSON.stringify(profileStorage));}
 loadProfilesFromStorage();
 buildStartPeriod();
 var brInit=getBaseRate();
@@ -1473,8 +614,8 @@ updateAutoMultiples();
 updateDBRMax();
 autoSetLoan();
 recalcAll();
-
 document.getElementById('msgBox').readOnly = false;
+syncProfileCompact();
 </script>
 </body>
 </html>
